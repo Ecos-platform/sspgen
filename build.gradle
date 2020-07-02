@@ -1,0 +1,67 @@
+plugins {
+    id 'base'
+    id 'application'
+    id 'distribution'
+    id 'org.jetbrains.kotlin.jvm' version '1.4-M2'
+    id "com.github.johnrengelman.shadow" version "4.0.4"
+}
+
+wrapper {
+    distributionType = Wrapper.DistributionType.ALL
+    gradleVersion = '6.5.1'
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+println "Gradle version is ${gradle.getGradleVersion()}"
+
+repositories {
+    mavenCentral()
+    maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+
+    compile group: 'info.picocli', name: 'picocli', version: '4.3.2'
+
+    def slf4j_version = '1.7.25'
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: slf4j_version
+    runtimeOnly group: 'org.slf4j', name: 'slf4j-log4j12', version: slf4j_version
+
+    def junit_version = '5.3.2'
+    testImplementation("org.junit.jupiter:junit-jupiter-api:$junit_version")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:$junit_version")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junit_version")
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+
+mainClassName = "no.ntnu.ihb.ssp.SSPGenerator"
+
+application {
+    mainClass.set(mainClassName)
+}
+
+shadowJar {
+    archiveBaseName.set('sspgen')
+    archiveVersion.set(null)
+    version(null)
+}
+
+distributions {
+    main {
+        baseName('sspgen')
+    }
+}
+
+startScripts {
+    applicationName = 'sspgen'
+}
