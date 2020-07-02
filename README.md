@@ -22,10 +22,11 @@ ssp("TestSsdGen") {
             elements {
                 component("FMU1", "fmus/FMU1.fmu") {
                     connectors {
-                        realConnector("realValue", Kind.input) {
+                        realConnector("output", Kind.output) {
                             unit("m/s")
                         }
-                        integerConnector("integerValue", Kind.output)
+                        realConnector("input", Kind.input)
+                        integerConnector("counter", Kind.output)
                     }
                     annotations {
                         annotation("no.ntnu.ihb.ssp.MyAnnotation") {
@@ -35,7 +36,17 @@ ssp("TestSsdGen") {
                         }
                     }
                 }
-                component("FMU2", "fmus/FMU2.fmu")
+                component("FMU2", "fmus/FMU2.fmu") {
+                    connectors {
+                        realConnector("input", Kind.input)
+                        realConnector("output", Kind.output)
+                    }
+                }
+            }
+
+            connections {
+                "FMU2.output" to "FMU1.input"
+                ("FMU1.output" to "FMU2.input").linearTransformation(factor = 1.5)
             }
 
         }
@@ -55,12 +66,7 @@ ssp("TestSsdGen") {
         }
 
     }
-    
-    fmus {
-        fmu("path/to/FMU1.fmu")
-        fmu("path/to/FMU2.fmu")
-    }
-  
+
 }
 
 ```
@@ -75,10 +81,13 @@ in an SSP archive named `TestSsdGen.ssp` with two FMUs and a `SystemStructure.ss
         <ssd:Elements>
             <ssd:Component source="fmus/FMU1.fmu" name="FMU1">
                 <ssd:Connectors>
-                    <ssd:Connector name="realValue" kind="input">
+                    <ssd:Connector name="output" kind="output">
                         <ssc:Real unit="m/s"/>
                     </ssd:Connector>
-                    <ssd:Connector name="integerValue" kind="output">
+                    <ssd:Connector name="input" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="counter" kind="output">
                         <ssc:Integer/>
                     </ssd:Connector>
                 </ssd:Connectors>
@@ -88,8 +97,23 @@ in an SSP archive named `TestSsdGen.ssp` with two FMUs and a `SystemStructure.ss
                     </ssc:Annotation>
                 </ssd:Annotations>
             </ssd:Component>
-            <ssd:Component source="fmus/FMU2.fmu" name="FMU2"/>
+            <ssd:Component source="fmus/FMU2.fmu" name="FMU2">
+                <ssd:Connectors>
+                    <ssd:Connector name="input" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="output" kind="output">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                </ssd:Connectors>
+            </ssd:Component>
         </ssd:Elements>
+        <ssd:Connections>
+            <ssd:Connection startElement="FMU2" startConnector="output" endElement="FMU1" endConnector="input"/>
+            <ssd:Connection startElement="FMU1" startConnector="output" endElement="FMU2" endConnector="input">
+                <ssc:LinearTransformation factor="1.5" offset="0.0"/>
+            </ssd:Connection>
+        </ssd:Connections>
     </ssd:System>
     <ssd:DefaultExperiment startTime="1.0">
         <ssd:Annotations>
