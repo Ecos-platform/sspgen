@@ -61,7 +61,10 @@ class SspContext {
     val extra = mutableListOf<File>()
     val fmus = mutableListOf<File>()
 
-    fun ssd(ctx: SsdContext.() -> Unit) {
+    fun ssd(name: String, ctx: SsdContext.() -> Unit) {
+        ssd.name = name
+        ssd.version = "1.0"
+        ssd.generationTool = "sspgen"
         SsdContext(ssd).apply(ctx)
     }
 
@@ -114,12 +117,6 @@ class SsdContext(
             ssd.copyright = value
         }
 
-    var name: String?
-        get() = ssd.name
-        set(value) {
-            ssd.name = value
-        }
-
     var description: String?
         get() = ssd.description
         set(value) {
@@ -131,10 +128,6 @@ class SsdContext(
         set(value) {
             ssd.license = value
         }
-
-    init {
-        ssd.generationTool = "sspgen"
-    }
 
     fun system(name: String, ctx: SystemContext.() -> Unit) {
         ssd.system = TSystem().apply { this.name = name }
@@ -320,10 +313,9 @@ private fun main() {
 
     val ssd = ssp("TestSsdGen") {
 
-        ssd {
+        ssd("A simple CLI test") {
 
             author = "John Doe"
-            name = "A simple CLI test"
             description = "A simple description"
 
             system("Test") {
