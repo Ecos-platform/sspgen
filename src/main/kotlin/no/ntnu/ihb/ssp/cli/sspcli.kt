@@ -1,5 +1,6 @@
 package no.ntnu.ihb.ssp.cli
 
+import no.ntnu.ihb.ssp.extractElementAndConnectorNames
 import no.ntnu.ihb.ssp.schema.*
 import java.io.BufferedOutputStream
 import java.io.ByteArrayOutputStream
@@ -153,15 +154,56 @@ class SsdContext(
         var description: String? = system.description
 
         fun elements(ctx: ElementsContext.() -> Unit) {
-            if (system.elements == null) {
-                system.elements = TSystem.Elements()
-            }
+            system.elements = TSystem.Elements()
             ElementsContext(system).apply(ctx)
+        }
+
+        fun connections(ctx: ConnectionsContext.() -> Unit) {
+            system.connections = TSystem.Connections()
+            ConnectionsContext(system.connections).apply(ctx)
+        }
+
+        @Scoped
+        class ConnectionsContext(
+            private val connections: TSystem.Connections
+        ) {
+
+            infix fun String.to(other: String): ConnectionContext {
+                val (e1, c1) = this.extractElementAndConnectorNames()
+                val (e2, c2) = other.extractElementAndConnectorNames()
+                val connection = TSystem.Connections.Connection().apply {
+                    startElement = e1
+                    startConnector = c1
+                    endElement = e2
+                    endConnector = c2
+                }
+                connections.connection.add(connection)
+                return ConnectionContext(connection)
+            }
+
+            class ConnectionContext(
+                private val connection: TSystem.Connections.Connection
+            ) {
+
+                fun annotations(ctx: AnnotationsContext.() -> Unit) {
+                    connection.annotations = TAnnotations()
+                    AnnotationsContext(connection.annotations).apply(ctx)
+                }
+
+                fun linearTransformation(factor: Number? = null, offset: Number? = null) {
+                    connection.linearTransformation = TSystem.Connections.Connection.LinearTransformation().apply {
+                        this.offset = offset?.toDouble() ?: 0.0
+                        this.factor = factor?.toDouble() ?: 1.0
+                    }
+                }
+
+            }
+
         }
 
         @Scoped
         class ElementsContext(
-            private val system: TSystem
+            system: TSystem
         ) {
 
             private val components = system.elements.component
@@ -197,7 +239,6 @@ class SsdContext(
                 class ConnectorsContext(
                     private val connectors: TConnectors
                 ) {
-
 
                     private fun connector(name: String, kind: Kind): TConnectors.Connector {
                         return TConnectors.Connector().apply {
@@ -273,7 +314,6 @@ class SsdContext(
             annotations.annotation.add(annotation)
         }
 
-
     }
 
     @Scoped
@@ -325,13 +365,11 @@ private fun main() {
                 elements {
                     component("FMU1", "fmus/FMU1.fmu") {
                         connectors {
-                            realConnector("realValue", Kind.input) {
+                            realConnector("output", Kind.output) {
                                 unit("m/s")
                             }
-                            integerConnector("integerValue", Kind.output)
-                        }
-                        parameterBindings {
-
+                            realConnector("input", Kind.input)
+                            integerConnector("counter", Kind.output)
                         }
                         annotations {
                             annotation("no.ntnu.ihb.ssp.MyAnnotation") {
@@ -341,7 +379,17 @@ private fun main() {
                             }
                         }
                     }
-                    component("FMU2", "fmus/FMU2.fmu")
+                    component("FMU2", "fmus/FMU2.fmu") {
+                        connectors {
+                            realConnector("input", Kind.input)
+                            realConnector("output", Kind.output)
+                        }
+                    }
+                }
+
+                connections {
+                    "FMU2.output" to "FMU1.input"
+                    ("FMU1.output" to "FMU2.input").linearTransformation(factor = 1.5)
                 }
 
             }
