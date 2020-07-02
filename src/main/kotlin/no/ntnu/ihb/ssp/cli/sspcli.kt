@@ -126,13 +126,6 @@ class SspContext(
                     private val connectors: TConnectors
                 ) {
 
-                    fun integerConnector(name: String, kind: Kind, ctx: (RealConnectorContext.() -> Unit)? = null) {
-                        val connector = TConnectors.Connector().apply {
-                            this.name = name
-                            this.kind = kind.name
-                        }
-                    }
-
                     private fun connector(name: String, kind: Kind): TConnectors.Connector {
                         return TConnectors.Connector().apply {
                             this.name = name
