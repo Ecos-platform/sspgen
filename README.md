@@ -1,6 +1,6 @@
 # SSP-DSL
-Command Line Interface (CLI) for generating SSP archives from a Kotlin scrip
-using a custom Domain Specific Language (DSL)
+A Command Line Application for generating SSP archives from a Kotlin script
+using a custom Domain Specific Language (DSL).
 
 ### Example
 
@@ -26,9 +26,6 @@ ssp("TestSsdGen") {
                             unit("m/s")
                         }
                         integerConnector("integerValue", Kind.output)
-                    }
-                    parameterBindings {
-
                     }
                     annotations {
                         annotation("no.ntnu.ihb.ssp.MyAnnotation") {
