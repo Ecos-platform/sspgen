@@ -1,18 +1,11 @@
 
 package no.ntnu.ihb.ssp.schema;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAnyElement;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlSchemaType;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.NormalizedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import org.w3c.dom.Element;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -101,55 +94,33 @@ public class TAnnotations {
      *   &lt;/complexContent>
      * &lt;/complexType>
      * </pre>
-     * 
-     * 
+     *
+     *
      */
     @XmlAccessorType(XmlAccessType.FIELD)
-    @XmlType(name = "", propOrder = {
-        "any"
-    })
     public static class Annotation {
 
-        @XmlAnyElement(lax = true)
-        protected Object any;
+        @XmlElement(required = true)
+        String any;
+
         @XmlAttribute(name = "type", required = true)
         @XmlJavaTypeAdapter(NormalizedStringAdapter.class)
         @XmlSchemaType(name = "normalizedString")
         protected String type;
 
-        /**
-         * Gets the value of the any property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link Element }
-         *     {@link Object }
-         *     
-         */
-        public Object getAny() {
+        public String getAny() {
             return any;
         }
 
-        /**
-         * Sets the value of the any property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link Element }
-         *     {@link Object }
-         *     
-         */
-        public void setAny(Object value) {
-            this.any = value;
+        public void setAny(String any) {
+            this.any = any;
         }
 
         /**
          * Gets the value of the type property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         *
+         * @return possible object is
+         * {@link String }
          */
         public String getType() {
             return type;

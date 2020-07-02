@@ -1,18 +1,11 @@
 
 package no.ntnu.ihb.ssp.schema;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElements;
-import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlSchemaType;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -1420,51 +1413,101 @@ public class TSystem
      *   &lt;/complexContent>
      * &lt;/complexType>
      * </pre>
-     * 
-     * 
+     *
+     *
      */
     @XmlAccessorType(XmlAccessType.FIELD)
-    @XmlType(name = "", propOrder = {
-        "componentOrSignalDictionaryReferenceOrSystem"
-    })
     public static class Elements {
 
-        @XmlElements({
-            @XmlElement(name = "Component", namespace = "http://ssp-standard.org/SSP1/SystemStructureDescription", type = TComponent.class),
-            @XmlElement(name = "SignalDictionaryReference", namespace = "http://ssp-standard.org/SSP1/SystemStructureDescription", type = TSignalDictionaryReference.class),
-            @XmlElement(name = "System", namespace = "http://ssp-standard.org/SSP1/SystemStructureDescription", type = TSystem.class)
-        })
-        protected List<TElement> componentOrSignalDictionaryReferenceOrSystem;
+        @XmlElement(name = "Component", namespace = "http://ssp-standard.org/SSP1/SystemStructureDescription", type = TComponent.class)
+        protected List<TComponent> component;
+
+        @XmlElement(name = "SignalDictionaryReference", namespace = "http://ssp-standard.org/SSP1/SystemStructureDescription", type = TSignalDictionaryReference.class)
+        protected List<TSignalDictionaryReference> signalDictionary;
+
+
+        @XmlElement(name = "System", namespace = "http://ssp-standard.org/SSP1/SystemStructureDescription", type = TSystem.class)
+        protected List<TSystem> system;
 
         /**
-         * Gets the value of the componentOrSignalDictionaryReferenceOrSystem property.
-         * 
+         * Gets the value of the component property.
+         *
          * <p>
          * This accessor method returns a reference to the live list,
          * not a snapshot. Therefore any modification you make to the
          * returned list will be present inside the JAXB object.
-         * This is why there is not a <CODE>set</CODE> method for the componentOrSignalDictionaryReferenceOrSystem property.
-         * 
+         * This is why there is not a <CODE>set</CODE> method for the component property.
+         *
          * <p>
          * For example, to add a new item, do as follows:
          * <pre>
-         *    getComponentOrSignalDictionaryReferenceOrSystem().add(newItem);
+         *    getComponent().add(newItem);
          * </pre>
-         * 
-         * 
+         *
+         *
          * <p>
-         * Objects of the following type(s) are allowed in the list
+         * Object of the following type is allowed in the list
          * {@link TComponent }
-         * {@link TSignalDictionaryReference }
-         * {@link TSystem }
-         * 
-         * 
          */
-        public List<TElement> getComponentOrSignalDictionaryReferenceOrSystem() {
-            if (componentOrSignalDictionaryReferenceOrSystem == null) {
-                componentOrSignalDictionaryReferenceOrSystem = new ArrayList<TElement>();
+        public List<TComponent> getComponent() {
+            if (component == null) {
+                component = new ArrayList();
             }
-            return this.componentOrSignalDictionaryReferenceOrSystem;
+            return this.component;
+        }
+
+        /**
+         * Gets the value of the signalDictionary property.
+         *
+         * <p>
+         * This accessor method returns a reference to the live list,
+         * not a snapshot. Therefore any modification you make to the
+         * returned list will be present inside the JAXB object.
+         * This is why there is not a <CODE>set</CODE> method for the signalDictionary property.
+         *
+         * <p>
+         * For example, to add a new item, do as follows:
+         * <pre>
+         *    getSignalDictionary().add(newItem);
+         * </pre>
+         *
+         *
+         * <p>
+         * Object of the following type is allowed in the list
+         * {@link TSignalDictionaryReference }
+         */
+        public List<TSignalDictionaryReference> getSignalDictionary() {
+            if (signalDictionary == null) {
+                signalDictionary = new ArrayList();
+            }
+            return this.signalDictionary;
+        }
+
+        /**
+         * Gets the value of the system property.
+         *
+         * <p>
+         * This accessor method returns a reference to the live list,
+         * not a snapshot. Therefore any modification you make to the
+         * returned list will be present inside the JAXB object.
+         * This is why there is not a <CODE>set</CODE> method for the system property.
+         *
+         * <p>
+         * For example, to add a new item, do as follows:
+         * <pre>
+         *    getSystem().add(newItem);
+         * </pre>
+         *
+         *
+         * <p>
+         * Object of the following type is allowed in the list
+         * {@link TSystem }
+         */
+        public List<TSystem> getSystem() {
+            if (system == null) {
+                system = new ArrayList();
+            }
+            return this.system;
         }
 
     }
