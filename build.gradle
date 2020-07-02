@@ -3,7 +3,6 @@ plugins {
     id 'application'
     id 'distribution'
     id 'org.jetbrains.kotlin.jvm' version '1.4-M2'
-    id "com.github.johnrengelman.shadow" version "4.0.4"
 }
 
 wrapper {
@@ -48,12 +47,6 @@ mainClassName = "no.ntnu.ihb.ssp.SSPGenerator"
 
 application {
     mainClass.set(mainClassName)
-}
-
-shadowJar {
-    archiveBaseName.set('sspgen')
-    archiveVersion.set(null)
-    version(null)
 }
 
 distributions {
