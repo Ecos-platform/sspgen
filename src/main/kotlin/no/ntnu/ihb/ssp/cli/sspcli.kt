@@ -1,14 +1,13 @@
 package no.ntnu.ihb.ssp.cli
 
 import no.ntnu.ihb.ssp.schema.*
+import java.io.BufferedOutputStream
 import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileOutputStream
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
 import javax.xml.bind.JAXB
-
-fun ssd(ctx: SspContext.() -> Unit): SystemStructureDescription {
-    return SystemStructureDescription().also {
-        SspContext(it).apply(ctx)
-    }
-}
 
 @DslMarker
 @Target(AnnotationTarget.CLASS, AnnotationTarget.TYPE)
@@ -18,8 +17,88 @@ enum class Kind {
     input, output, inout, parameter, calculatedParameter
 }
 
+fun ssp(archiveName: String, ctx: SspContext.() -> Unit): SspContext {
+    return SspContext().apply(ctx).apply {
+
+        val sspArchive = File("$archiveName.ssp")
+
+        ZipOutputStream(BufferedOutputStream(FileOutputStream(sspArchive))).use { zos ->
+
+            zos.putNextEntry(ZipEntry("SystemStructure.ssd"))
+            zos.write(ssd.toXML().toByteArray())
+            zos.closeEntry()
+
+            if (fmus.isNotEmpty()) {
+                zos.putNextEntry(ZipEntry("fmus/"))
+                fmus.forEach {
+                    zos.putNextEntry(ZipEntry("fmus/${it.name}"))
+                    zos.write(it.readBytes())
+                    zos.closeEntry()
+                }
+                zos.closeEntry()
+            }
+
+            if (extra.isNotEmpty()) {
+                zos.putNextEntry(ZipEntry("extra/"))
+                extra.forEach {
+                    zos.putNextEntry(ZipEntry("extra/${it.name}"))
+                    zos.write(it.readBytes())
+                    zos.closeEntry()
+                }
+                zos.closeEntry()
+            }
+
+
+        }
+
+    }
+}
+
 @Scoped
-class SspContext(
+class SspContext {
+
+    val ssd: SystemStructureDescription = SystemStructureDescription()
+    val extra = mutableListOf<File>()
+    val fmus = mutableListOf<File>()
+
+    fun ssd(ctx: SsdContext.() -> Unit) {
+        SsdContext(ssd).apply(ctx)
+    }
+
+    fun fmus(ctx: FmuContext.() -> Unit) {
+        FmuContext().apply(ctx)
+    }
+
+    fun extra(ctx: ExtraContext.() -> Unit) {
+        ExtraContext().apply(ctx)
+    }
+
+    inner class FmuContext {
+
+        fun fmu(filePath: String) {
+            val file = File(filePath)
+            if (file.extension != "fmu") throw IllegalArgumentException("FMU does not have extension .fmu!")
+            if (!file.exists()) throw NoSuchFileException(file)
+            fmus.add(file)
+        }
+
+    }
+
+    inner class ExtraContext {
+
+        fun file(filePath: String) {
+            val file = File(filePath)
+            if (!file.exists()) throw NoSuchFileException(file)
+            extra.add(file)
+        }
+
+    }
+
+}
+
+
+@Scoped
+class SsdContext(
     private val ssd: SystemStructureDescription
 ) {
 
@@ -125,6 +204,7 @@ class SspContext(
                 class ConnectorsContext(
                     private val connectors: TConnectors
                 ) {
+
 
                     private fun connector(name: String, kind: Kind): TConnectors.Connector {
                         return TConnectors.Connector().apply {
@@ -238,59 +318,59 @@ fun SystemStructureDescription.toXML(): String {
 
 private fun main() {
 
-    val ssd = ssd {
+    val ssd = ssp("TestSsdGen") {
 
-        author = "John Doe"
-        name = "A simple CLI test"
-        description = "A simple description"
+        ssd {
 
-        system("Test") {
+            author = "John Doe"
+            name = "A simple CLI test"
+            description = "A simple description"
 
-            description = "An even simpler description"
+            system("Test") {
 
-            elements {
-                component("FMU1", "fmus/FMU1.fmu") {
-                    connectors {
-                        realConnector("realValue", Kind.input) {
-                            unit("m/s")
+                description = "An even simpler description"
+
+                elements {
+                    component("FMU1", "fmus/FMU1.fmu") {
+                        connectors {
+                            realConnector("realValue", Kind.input) {
+                                unit("m/s")
+                            }
+                            integerConnector("integerValue", Kind.output)
                         }
-                        integerConnector("integerValue", Kind.output)
-                    }
-                    parameterBindings {
+                        parameterBindings {
 
-                    }
-                    annotations {
-                        annotation("no.ntnu.ihb.ssp.MyAnnotation") {
-                            """
+                        }
+                        annotations {
+                            annotation("no.ntnu.ihb.ssp.MyAnnotation") {
+                                """
                                 <TestElement/>
                             """.trimIndent()
+                            }
                         }
                     }
+                    component("FMU2", "fmus/FMU2.fmu")
                 }
+
             }
 
-        }
+            defaultExperiment(startTime = 1.0) {
 
-        defaultExperiment(startTime = 1.0) {
-
-            annotations {
-                annotation("no.ntnu.ihb.ssp.MyAnnotation") {
-                    """
-                        <MyElement value="90"/>
-                    """.trimIndent()
-                }
-                annotation("no.ntnu.ihb.ssp.MyAnnotation") {
-                    """
+                annotations {
+                    annotation("no.ntnu.ihb.ssp.MyAnnotation") {
+                        """
                         <MyElement value="90">
                             <MySecondElement/>
                         </MyElement>
-                    """.trimIndent()
+                    """
+                    }
                 }
+
             }
 
         }
 
-    }
+    }.ssd
 
     println(ssd.toXML())
 

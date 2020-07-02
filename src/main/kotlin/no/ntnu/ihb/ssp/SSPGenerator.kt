@@ -5,7 +5,7 @@ import java.io.File
 import javax.script.ScriptEngineManager
 
 @CommandLine.Command
-class SSPGenerator: Runnable {
+class SSPGenerator : Runnable {
 
     @CommandLine.Parameters(
         arity = "1",
@@ -36,11 +36,11 @@ class SSPGenerator: Runnable {
 
     companion object {
 
-       @JvmStatic
-       fun main(args: Array<String>) {
+        @JvmStatic
+        fun main(args: Array<String>) {
             CommandLine(SSPGenerator()).execute(*args)
-       }
+        }
 
-   }
+    }
 
 }

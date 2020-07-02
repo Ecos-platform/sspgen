@@ -25,6 +25,11 @@ dependencies {
 
     compile group: 'info.picocli', name: 'picocli', version: '4.3.2'
 
+    compile 'org.jetbrains.kotlin:kotlin-script-util'
+    runtimeOnly 'org.jetbrains.kotlin:kotlin-script-runtime'
+    compile 'org.jetbrains.kotlin:kotlin-compiler-embeddable'
+    compile 'org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable'
+
     def slf4j_version = '1.7.25'
     implementation group: 'org.slf4j', name: 'slf4j-api', version: slf4j_version
     runtimeOnly group: 'org.slf4j', name: 'slf4j-log4j12', version: slf4j_version
