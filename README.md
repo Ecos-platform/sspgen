@@ -1,4 +1,4 @@
-# SSP-DSL
+# sspgen
 A Command Line Application for generating SSP archives from a Kotlin script
 using a custom Domain Specific Language (DSL).
 
