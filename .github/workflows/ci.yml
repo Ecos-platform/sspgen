@@ -32,4 +32,4 @@ jobs:
       - uses: actions/upload-artifact@master
         with:
           name: sspgen
-          path: cli/build/install/sspgen
+          path: build/install/sspgen
