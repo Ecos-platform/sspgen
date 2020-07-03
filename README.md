@@ -34,13 +34,6 @@ ssp("TestSsdGen") {
                             integer("counter", 99)
                         }
                     }
-                    annotations {
-                        annotation("no.ntnu.ihb.ssp.MyAnnotation") {
-                            """
-                            <TestElement/>
-                        """.trimIndent()
-                        }
-                    }
                 }
                 component("FMU2", "fmus/FMU2.fmu") {
                     connectors {
@@ -57,19 +50,7 @@ ssp("TestSsdGen") {
 
         }
 
-        defaultExperiment(startTime = 1.0) {
-
-            annotations {
-                annotation("no.ntnu.ihb.ssp.MyAnnotation") {
-                    """
-                    <MyElement value="90">
-                        <MySecondElement/>
-                    </MyElement>
-                """
-                }
-            }
-
-        }
+        defaultExperiment(startTime = 1.0)
 
     }
 
@@ -113,11 +94,6 @@ in an SSP archive named `TestSsdGen.ssp` with two FMUs and a `SystemStructure.ss
                         </ssd:ParameterValues>
                     </ssd:ParameterBinding>
                 </ssd:ParameterBindings>
-                <ssd:Annotations>
-                    <ssc:Annotation type="no.ntnu.ihb.ssp.MyAnnotation">
-                        <TestElement/>
-                    </ssc:Annotation>
-                </ssd:Annotations>
             </ssd:Component>
             <ssd:Component source="fmus/FMU2.fmu" name="FMU2">
                 <ssd:Connectors>
@@ -137,15 +113,7 @@ in an SSP archive named `TestSsdGen.ssp` with two FMUs and a `SystemStructure.ss
             </ssd:Connection>
         </ssd:Connections>
     </ssd:System>
-    <ssd:DefaultExperiment startTime="1.0">
-        <ssd:Annotations>
-            <ssc:Annotation type="no.ntnu.ihb.ssp.MyAnnotation">
-                <MyElement value="90">
-                    <MySecondElement/>
-                </MyElement>
-            </ssc:Annotation>
-        </ssd:Annotations>
-    </ssd:DefaultExperiment>
+    <ssd:DefaultExperiment startTime="1.0"/>
 </ssd:SystemStructureDescription>
 
 ```
