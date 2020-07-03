@@ -137,12 +137,12 @@ class SsdContext(
     fun defaultExperiment(
         startTime: Number? = null,
         stopTime: Number? = null,
-        ctx: DefaultExperimentContext.() -> Unit
+        ctx: (DefaultExperimentContext.() -> Unit)? = null
     ) {
         ssd.defaultExperiment = TDefaultExperiment()
         ssd.defaultExperiment.startTime = startTime?.toDouble()
         ssd.defaultExperiment.stopTime = stopTime?.toDouble()
-        DefaultExperimentContext(ssd.defaultExperiment).apply(ctx)
+        ctx?.also { DefaultExperimentContext(ssd.defaultExperiment).apply(it) }
     }
 
     @Scoped
@@ -469,19 +469,7 @@ private fun main() {
 
             }
 
-            defaultExperiment(startTime = 1.0) {
-
-                annotations {
-                    annotation("no.ntnu.ihb.ssp.MyAnnotation") {
-                        """
-                        <MyElement value="90">
-                            <MySecondElement/>
-                        </MyElement>
-                    """
-                    }
-                }
-
-            }
+            defaultExperiment(startTime = 1.0)
 
         }
 
