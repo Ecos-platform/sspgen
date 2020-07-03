@@ -30,7 +30,7 @@ ssp("TestSsdGen") {
                     }
                     parameterbindings {
                         parameterSet("initalValues") {
-                            real("value", 2.0)
+                            real("input", 2.0)
                             integer("counter", 99)
                         }
                     }
@@ -102,7 +102,7 @@ in an SSP archive named `TestSsdGen.ssp` with two FMUs and a `SystemStructure.ss
                         <ssd:ParameterValues>
                             <ssv:ParameterSet version="1.0" name="initalValues">
                                 <ssv:Parameters>
-                                    <ssv:Parameter name="value">
+                                    <ssv:Parameter name="input">
                                         <ssv:Real value="2.0"/>
                                     </ssv:Parameter>
                                     <ssv:Parameter name="counter">

@@ -442,7 +442,7 @@ private fun main() {
                         }
                         parameterbindings {
                             parameterSet("initalValues") {
-                                real("value", 2.0)
+                                real("input", 2.0)
                                 integer("counter", 99)
                             }
                         }
