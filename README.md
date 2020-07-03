@@ -54,10 +54,6 @@ ssp("TestSsdGen") {
 
     }
 
-    fmus {
-        
-    }
-    
     resources {
         file("path/to/FMU1.fmu")
         file("path/to/FMU2.fmu")
