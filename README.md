@@ -28,6 +28,12 @@ ssp("TestSsdGen") {
                         realConnector("input", Kind.input)
                         integerConnector("counter", Kind.output)
                     }
+                    parameterbindings {
+                        parameterSet("initalValues") {
+                            real("value", 2.0)
+                            integer("counter", 99)
+                        }
+                    }
                     annotations {
                         annotation("no.ntnu.ihb.ssp.MyAnnotation") {
                             """
@@ -91,6 +97,22 @@ in an SSP archive named `TestSsdGen.ssp` with two FMUs and a `SystemStructure.ss
                         <ssc:Integer/>
                     </ssd:Connector>
                 </ssd:Connectors>
+                <ssd:ParameterBindings>
+                    <ssd:ParameterBinding>
+                        <ssd:ParameterValues>
+                            <ssv:ParameterSet version="1.0" name="initalValues">
+                                <ssv:Parameters>
+                                    <ssv:Parameter name="value">
+                                        <ssv:Real value="2.0"/>
+                                    </ssv:Parameter>
+                                    <ssv:Parameter name="counter">
+                                        <ssv:Integer value="99"/>
+                                    </ssv:Parameter>
+                                </ssv:Parameters>
+                            </ssv:ParameterSet>
+                        </ssd:ParameterValues>
+                    </ssd:ParameterBinding>
+                </ssd:ParameterBindings>
                 <ssd:Annotations>
                     <ssc:Annotation type="no.ntnu.ihb.ssp.MyAnnotation">
                         <TestElement/>

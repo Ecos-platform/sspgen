@@ -49,7 +49,6 @@ fun ssp(archiveName: String, ctx: SspContext.() -> Unit): SspContext {
                 zos.closeEntry()
             }
 
-
         }
 
     }
@@ -81,7 +80,7 @@ class SspContext {
 
         fun fmu(filePath: String) {
             val file = File(filePath)
-            if (file.extension != "fmu") throw IllegalArgumentException("FMU does not have extension .fmu!")
+            if (file.extension != "fmu") throw IllegalArgumentException("Supplied file '$filePath' does not have extension .fmu!")
             if (!file.exists()) throw NoSuchFileException(file)
             fmus.add(file)
         }
@@ -226,8 +225,13 @@ class SsdContext(
                     ConnectorsContext(component.connectors).apply(ctx)
                 }
 
-                fun parameterBindings(ctx: ParameterBindingsContext.() -> Unit) {
-                    ParameterBindingsContext().apply(ctx)
+                fun parameterbindings(ctx: ParameterBindingsContext.() -> Unit) {
+                    if (component.parameterBindings == null) {
+                        component.parameterBindings = TParameterBindings()
+                    }
+                    val binding = TParameterBindings.ParameterBinding()
+                    component.parameterBindings.parameterBinding.add(binding)
+                    ParameterBindingsContext(binding).apply(ctx)
                 }
 
                 fun annotations(ctx: AnnotationsContext.() -> Unit) {
@@ -291,7 +295,70 @@ class SsdContext(
 
                 }
 
-                class ParameterBindingsContext {
+                class ParameterBindingsContext(
+                    private val binding: TParameterBindings.ParameterBinding
+                ) {
+
+                    fun parameterSet(name: String, ctx: ParameterSetContext.() -> Unit) {
+                        val parameterSet = ParameterSet().apply {
+                            this.name = name
+                            this.version = "1.0"
+                        }
+                        if (binding.parameterValues == null) {
+                            binding.parameterValues = TParameterBindings.ParameterBinding.ParameterValues()
+                        }
+                        binding.parameterValues.parameterSet.add(parameterSet)
+                        ParameterSetContext(parameterSet).apply(ctx)
+                    }
+
+                    class ParameterSetContext(
+                        private val parameterSet: ParameterSet
+                    ) {
+
+                        private fun parameter(name: String): TParameter {
+                            val parameter = TParameter().apply {
+                                this.name = name
+                            }
+                            if (parameterSet.parameters == null) {
+                                parameterSet.parameters = TParameters()
+                            }
+                            parameterSet.parameters.parameter.add(parameter)
+                            return parameter
+                        }
+
+                        fun integer(name: String, value: Int) {
+                            parameter(name).apply {
+                                this.integer = TParameter.Integer().apply {
+                                    this.value = value
+                                }
+                            }
+                        }
+
+                        fun real(name: String, value: Number) {
+                            parameter(name).apply {
+                                this.real = TParameter.Real().apply {
+                                    this.value = value.toDouble()
+                                }
+                            }
+                        }
+
+                        fun string(name: String, value: String) {
+                            parameter(name).apply {
+                                this.string = TParameter.String().apply {
+                                    this.value = value
+                                }
+                            }
+                        }
+
+                        fun boolean(name: String, value: Boolean) {
+                            parameter(name).apply {
+                                this.boolean = TParameter.Boolean().apply {
+                                    this.isValue = value
+                                }
+                            }
+                        }
+
+                    }
 
                 }
 
@@ -336,9 +403,11 @@ fun SystemStructureDescription.toXML(): String {
     var xml = bos.toString()
     xml = xml.replace("ns2:", "ssd:")
     xml = xml.replace("ns3:", "ssc:")
+    xml = xml.replace("ns4:", "ssv:")
     xml = xml.replace("xmlns:ns2", "xmlns:ssd")
     xml = xml.replace("xmlns:ns3", "xmlns:ssc")
-    xml = xml.replace("xmlns:ns4", "xmlns:ssb")
+    xml = xml.replace("xmlns:ns4", "xmlns:ssv")
+    xml = xml.replace("xmlns:ns5", "xmlns:ssb")
 
     xml = xml.replace("<any>", "")
     xml = xml.replace("</any>", "")
@@ -370,6 +439,12 @@ private fun main() {
                             }
                             realConnector("input", Kind.input)
                             integerConnector("counter", Kind.output)
+                        }
+                        parameterbindings {
+                            parameterSet("initalValues") {
+                                real("value", 2.0)
+                                integer("counter", 99)
+                            }
                         }
                         annotations {
                             annotation("no.ntnu.ihb.ssp.MyAnnotation") {
