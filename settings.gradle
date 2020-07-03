@@ -6,5 +6,5 @@ pluginManagement {
     }
 }
 
-rootProject.name = 'sspen'
+rootProject.name = 'sspgen'
 
