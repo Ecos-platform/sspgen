@@ -54,12 +54,22 @@ ssp("TestSsdGen") {
 
     }
 
+    fmus {
+        fmu("path/to/FMU1.fmu")
+        fmu("path/to/FMU2.fmu")
+    }
+    
+    extra {
+        file("path/to/someFile.csv")
+    }
+
 }
 
 ```
 
 Invoking the following in a shell `./ssdgen ExampleSsdGen.kts` would result
-in an SSP archive named `TestSsdGen.ssp` with two FMUs and a `SystemStructure.ssd` with the content:
+in an SSP archive named `TestSsdGen.ssp` with two FMUs located under `/fmus`, 
+`someFile.csv` located in `/extra` and a `SystemStructure.ssd` with the content:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
