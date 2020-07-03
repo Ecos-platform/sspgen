@@ -47,6 +47,10 @@ compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
 
+test {
+    failFast = true
+    useJUnitPlatform()
+}
 
 mainClassName = "no.ntnu.ihb.ssp.SSPGenerator"
 

@@ -1,13 +1,13 @@
 package no.ntnu.ihb.ssp.cli
 
+import no.ntnu.ihb.ssp.FileResource
+import no.ntnu.ihb.ssp.Resource
+import no.ntnu.ihb.ssp.UrlResource
 import no.ntnu.ihb.ssp.extractElementAndConnectorNames
 import no.ntnu.ihb.ssp.schema.*
-import java.io.BufferedOutputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
-import java.io.FileOutputStream
-import java.util.zip.ZipEntry
-import java.util.zip.ZipOutputStream
+import java.net.URL
 import javax.xml.bind.JAXB
 
 @DslMarker
@@ -19,36 +19,15 @@ enum class Kind {
 }
 
 fun ssp(archiveName: String, ctx: SspContext.() -> Unit): SspContext {
-    return SspContext().apply(ctx).apply {
-
-        val sspArchive = File("$archiveName.ssp")
-
-        ZipOutputStream(BufferedOutputStream(FileOutputStream(sspArchive))).use { zos ->
-
-            zos.putNextEntry(ZipEntry("SystemStructure.ssd"))
-            zos.write(ssd.toXML().toByteArray())
-            zos.closeEntry()
-
-            if (resources.isNotEmpty()) {
-                zos.putNextEntry(ZipEntry("resources/"))
-                resources.forEach {
-                    zos.putNextEntry(ZipEntry("resources/${it.name}"))
-                    zos.write(it.readBytes())
-                    zos.closeEntry()
-                }
-                zos.closeEntry()
-            }
-
-        }
-
-    }
+    return SspContext(archiveName).apply(ctx)
 }
 
-@Scoped
-class SspContext {
+class SspContext(
+    val archiveName: String
+) {
 
     val ssd: SystemStructureDescription = SystemStructureDescription()
-    val resources = mutableListOf<File>()
+    val resources = mutableListOf<Resource>()
 
     fun ssd(name: String, ctx: SsdContext.() -> Unit) {
         ssd.name = name
@@ -66,7 +45,11 @@ class SspContext {
         fun file(filePath: String) {
             val file = File(filePath)
             if (!file.exists()) throw NoSuchFileException(file)
-            resources.add(file)
+            resources.add(FileResource(file))
+        }
+
+        fun url(urlString: String) {
+            resources.add(UrlResource(URL(urlString)))
         }
 
     }
@@ -391,65 +374,3 @@ fun SystemStructureDescription.toXML(): String {
 
     return xml
 }
-
-private fun main() {
-
-    val ssd = ssp("TestSsdGen") {
-
-        ssd("A simple CLI test") {
-
-            author = "John Doe"
-            description = "A simple description"
-
-            system("Test") {
-
-                description = "An even simpler description"
-
-                elements {
-                    component("FMU1", "resources/FMU1.fmu") {
-                        connectors {
-                            realConnector("output", Kind.output) {
-                                unit("m/s")
-                            }
-                            realConnector("input", Kind.input)
-                            integerConnector("counter", Kind.output)
-                        }
-                        parameterbindings {
-                            parameterSet("initalValues") {
-                                real("input", 2.0)
-                                integer("counter", 99)
-                            }
-                        }
-                        annotations {
-                            annotation("no.ntnu.ihb.ssp.MyAnnotation") {
-                                """
-                                <TestElement/>
-                            """.trimIndent()
-                            }
-                        }
-                    }
-                    component("FMU2", "resources/FMU2.fmu") {
-                        connectors {
-                            realConnector("input", Kind.input)
-                            realConnector("output", Kind.output)
-                        }
-                    }
-                }
-
-                connections {
-                    "FMU2.output" to "FMU1.input"
-                    ("FMU1.output" to "FMU2.input").linearTransformation(factor = 1.5)
-                }
-
-            }
-
-            defaultExperiment(startTime = 1.0)
-
-        }
-
-    }.ssd
-
-    println(ssd.toXML())
-
-}
-
