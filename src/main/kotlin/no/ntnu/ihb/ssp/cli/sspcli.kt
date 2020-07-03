@@ -29,20 +29,10 @@ fun ssp(archiveName: String, ctx: SspContext.() -> Unit): SspContext {
             zos.write(ssd.toXML().toByteArray())
             zos.closeEntry()
 
-            if (fmus.isNotEmpty()) {
-                zos.putNextEntry(ZipEntry("fmus/"))
-                fmus.forEach {
-                    zos.putNextEntry(ZipEntry("fmus/${it.name}"))
-                    zos.write(it.readBytes())
-                    zos.closeEntry()
-                }
-                zos.closeEntry()
-            }
-
-            if (extra.isNotEmpty()) {
-                zos.putNextEntry(ZipEntry("extra/"))
-                extra.forEach {
-                    zos.putNextEntry(ZipEntry("extra/${it.name}"))
+            if (resources.isNotEmpty()) {
+                zos.putNextEntry(ZipEntry("resources/"))
+                resources.forEach {
+                    zos.putNextEntry(ZipEntry("resources/${it.name}"))
                     zos.write(it.readBytes())
                     zos.closeEntry()
                 }
@@ -58,8 +48,7 @@ fun ssp(archiveName: String, ctx: SspContext.() -> Unit): SspContext {
 class SspContext {
 
     val ssd: SystemStructureDescription = SystemStructureDescription()
-    val extra = mutableListOf<File>()
-    val fmus = mutableListOf<File>()
+    val resources = mutableListOf<File>()
 
     fun ssd(name: String, ctx: SsdContext.() -> Unit) {
         ssd.name = name
@@ -68,31 +57,16 @@ class SspContext {
         SsdContext(ssd).apply(ctx)
     }
 
-    fun fmus(ctx: FmuContext.() -> Unit) {
-        FmuContext().apply(ctx)
+    fun resources(ctx: ResourcesContext.() -> Unit) {
+        ResourcesContext().apply(ctx)
     }
 
-    fun extra(ctx: ExtraContext.() -> Unit) {
-        ExtraContext().apply(ctx)
-    }
-
-    inner class FmuContext {
-
-        fun fmu(filePath: String) {
-            val file = File(filePath)
-            if (file.extension != "fmu") throw IllegalArgumentException("Supplied file '$filePath' does not have extension .fmu!")
-            if (!file.exists()) throw NoSuchFileException(file)
-            fmus.add(file)
-        }
-
-    }
-
-    inner class ExtraContext {
+    inner class ResourcesContext {
 
         fun file(filePath: String) {
             val file = File(filePath)
             if (!file.exists()) throw NoSuchFileException(file)
-            extra.add(file)
+            resources.add(file)
         }
 
     }
@@ -432,7 +406,7 @@ private fun main() {
                 description = "An even simpler description"
 
                 elements {
-                    component("FMU1", "fmus/FMU1.fmu") {
+                    component("FMU1", "resources/FMU1.fmu") {
                         connectors {
                             realConnector("output", Kind.output) {
                                 unit("m/s")
@@ -454,7 +428,7 @@ private fun main() {
                             }
                         }
                     }
-                    component("FMU2", "fmus/FMU2.fmu") {
+                    component("FMU2", "resources/FMU2.fmu") {
                         connectors {
                             realConnector("input", Kind.input)
                             realConnector("output", Kind.output)

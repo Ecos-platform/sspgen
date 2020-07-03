@@ -55,12 +55,13 @@ ssp("TestSsdGen") {
     }
 
     fmus {
-        fmu("path/to/FMU1.fmu")
-        fmu("path/to/FMU2.fmu")
+        
     }
     
-    extra {
-        file("path/to/someFile.csv")
+    resources {
+        file("path/to/FMU1.fmu")
+        file("path/to/FMU2.fmu")
+        file("path/to/someFile.txt")
     }
 
 }
@@ -68,15 +69,15 @@ ssp("TestSsdGen") {
 ```
 
 Invoking the following in a shell `./ssdgen ExampleSsdGen.kts` would result
-in an SSP archive named `TestSsdGen.ssp` with two FMUs located under `/fmus`, 
-`someFile.csv` located in `/extra` and a `SystemStructure.ssd` with the content:
+in an SSP archive named `TestSsdGen.ssp` with two FMUs and `someFile.txt` located 
+under `/resources` and a `SystemStructure.ssd` in the root directory with the content:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ssd:SystemStructureDescription xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" version="1.0" name="A simple CLI test" description="A simple description" author="John Doe" generationTool="sspgen">
     <ssd:System name="Test">
         <ssd:Elements>
-            <ssd:Component source="fmus/FMU1.fmu" name="FMU1">
+            <ssd:Component source="resources/FMU1.fmu" name="FMU1">
                 <ssd:Connectors>
                     <ssd:Connector name="output" kind="output">
                         <ssc:Real unit="m/s"/>
@@ -105,7 +106,7 @@ in an SSP archive named `TestSsdGen.ssp` with two FMUs located under `/fmus`,
                     </ssd:ParameterBinding>
                 </ssd:ParameterBindings>
             </ssd:Component>
-            <ssd:Component source="fmus/FMU2.fmu" name="FMU2">
+            <ssd:Component source="resources/FMU2.fmu" name="FMU2">
                 <ssd:Connectors>
                     <ssd:Connector name="input" kind="input">
                         <ssc:Real/>
