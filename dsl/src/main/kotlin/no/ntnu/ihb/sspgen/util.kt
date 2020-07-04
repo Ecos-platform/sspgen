@@ -2,10 +2,7 @@ package no.ntnu.ihb.sspgen
 
 import no.ntnu.ihb.sspgen.dsl.SspContext
 import no.ntnu.ihb.sspgen.schema.SystemStructureDescription
-import java.io.BufferedOutputStream
-import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.FileOutputStream
+import java.io.*
 import java.net.URL
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
@@ -28,20 +25,22 @@ interface Resource {
 }
 
 class FileResource(
-    val file: File
+    private val file: File
 ) : Resource {
 
     override val name: String
         get() = file.name
 
     override fun readBytes(): ByteArray {
-        return file.readBytes()
+        return FileInputStream(file).buffered().use {
+            readBytes()
+        }
     }
 
 }
 
 class UrlResource(
-    val url: URL
+    private val url: URL
 ) : Resource {
 
     override val name: String
@@ -51,7 +50,7 @@ class UrlResource(
         }
 
     override fun readBytes(): ByteArray {
-        return url.openStream().use {
+        return url.openStream().buffered().use {
             it.readBytes()
         }
     }
