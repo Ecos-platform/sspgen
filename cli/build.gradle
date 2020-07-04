@@ -17,7 +17,7 @@ dependencies {
 
 }
 
-mainClassName = "no.ntnu.ihb.ssp.SSPGenerator"
+mainClassName = "no.ntnu.ihb.sspgen.SSPGenerator"
 
 application {
     mainClass.set(mainClassName)
