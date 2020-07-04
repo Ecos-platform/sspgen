@@ -8,10 +8,11 @@ wrapper {
     gradleVersion = '6.5.1'
 }
 
-group 'org.example'
-version '1.0-SNAPSHOT'
+group 'no.ntnu.ihb.sspgen'
+version = rootProject.file("VERSION").readLines()[0]
 
 println "Gradle version is ${gradle.getGradleVersion()}"
+println "Configuring $project.name version $version"
 
 subprojects {
 
@@ -22,7 +23,7 @@ subprojects {
     }
 
     dependencies {
-        
+
         def slf4j_version = '1.7.25'
         implementation group: 'org.slf4j', name: 'slf4j-api', version: slf4j_version
         runtimeOnly group: 'org.slf4j', name: 'slf4j-log4j12', version: slf4j_version

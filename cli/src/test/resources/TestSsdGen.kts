@@ -1,5 +1,5 @@
-import no.ntnu.ihb.ssp.dsl.Kind
-import no.ntnu.ihb.ssp.dsl.ssp
+import no.ntnu.ihb.sspgen.dsl.Kind
+import no.ntnu.ihb.sspgen.dsl.ssp
 
 ssp("TestSsdGen") {
 
