@@ -107,24 +107,32 @@ class SsdContext(
             ElementsContext(system).apply(ctx)
         }
 
-        fun connections(ctx: ConnectionsContext.() -> Unit) {
+        fun connections(inputsFirst: Boolean = false, ctx: ConnectionsContext.() -> Unit) {
             system.connections = TSystem.Connections()
-            ConnectionsContext(system.connections).apply(ctx)
+            ConnectionsContext(inputsFirst, system.connections).apply(ctx)
         }
 
         @Scoped
         class ConnectionsContext(
+            private val inputsFirst: Boolean,
             private val connections: TSystem.Connections
         ) {
 
             infix fun String.to(other: String): ConnectionContext {
-                val (e1, c1) = this.extractElementAndConnectorNames() //output
-                val (e2, c2) = other.extractElementAndConnectorNames() //input
+                val (e1, c1) = this.extractElementAndConnectorNames()
+                val (e2, c2) = other.extractElementAndConnectorNames()
                 val connection = TSystem.Connections.Connection().apply {
-                    endElement = e1
-                    endConnector = c1
-                    startElement = e2
-                    startConnector = c2
+                    startElement = e1
+                    startConnector = c1
+                    endElement = e2
+                    endConnector = c2
+                }
+
+                if (inputsFirst) {
+                    connection.startElement = connection.endElement
+                    connection.startConnector = connection.startConnector
+                    connection.endElement = connection.endConnector
+                    connection.endConnector = connection.startConnector
                 }
                 connections.connection.add(connection)
                 return ConnectionContext(

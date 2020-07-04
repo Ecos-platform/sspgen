@@ -115,8 +115,8 @@ under `/resources` and a `SystemStructure.ssd` in the root directory with the co
             </ssd:Component>
         </ssd:Elements>
         <ssd:Connections>
-            <ssd:Connection startElement="FMU1" startConnector="output" endElement="FMU2" endConnector="input"/>
-            <ssd:Connection startElement="FMU2" startConnector="output" endElement="FMU1" endConnector="input">
+            <ssd:Connection startElement="FMU2" startConnector="output" endElement="FMU1" endConnector="input"/>
+            <ssd:Connection startElement="FMU1" startConnector="output" endElement="FMU2" endConnector="input">
                 <ssc:LinearTransformation factor="1.5" offset="0.0"/>
             </ssd:Connection>
         </ssd:Connections>
