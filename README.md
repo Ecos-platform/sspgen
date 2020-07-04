@@ -28,7 +28,7 @@ ssp("TestSsdGen") {
                         real("input", Kind.input)
                         integer("counter", Kind.output)
                     }
-                    parameterbindings {
+                    parameterBindings {
                         parameterSet("initalValues") {
                             real("input", 2.0)
                             integer("counter", 99)
