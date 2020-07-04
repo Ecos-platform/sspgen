@@ -125,13 +125,13 @@ class SsdContext(
         ) {
 
             infix fun String.to(other: String): ConnectionContext {
-                val (e1, c1) = this.extractElementAndConnectorNames()
-                val (e2, c2) = other.extractElementAndConnectorNames()
+                val (e1, c1) = this.extractElementAndConnectorNames() //output
+                val (e2, c2) = other.extractElementAndConnectorNames() //input
                 val connection = TSystem.Connections.Connection().apply {
-                    startElement = e1
-                    startConnector = c1
-                    endElement = e2
-                    endConnector = c2
+                    endElement = e1
+                    endConnector = c1
+                    startElement = e2
+                    startConnector = c2
                 }
                 connections.connection.add(connection)
                 return ConnectionContext(
