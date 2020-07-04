@@ -65,7 +65,7 @@ ssp("TestSsdGen") {
 
 ```
 
-Executiong `./ExampleSsdGen.kts` in a shell would result
+Executing `./ExampleSsdGen.kts` in a shell would result
 in an SSP archive named `TestSsdGen.ssp` with two FMUs and `someFile.txt` located 
 under `/resources` and a `SystemStructure.ssd` in the root directory with the content:
 
