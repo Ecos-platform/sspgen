@@ -164,7 +164,7 @@ class SsdContext(
             system: TSystem
         ) {
 
-            private val components = system.elements.component
+            private val components: MutableList<TComponent> = system.elements.component
 
             fun component(name: String, source: String, ctx: (ComponentContext.() -> Unit)? = null) {
                 val component = TComponent().apply {
@@ -173,6 +173,7 @@ class SsdContext(
                 }.also { components.add(it) }
                 ctx?.also {
                     ComponentContext(
+                        components,
                         component
                     ).apply(it)
                 }
@@ -180,12 +181,14 @@ class SsdContext(
 
             @Scoped
             class ComponentContext(
+                private val components: MutableList<TComponent>,
                 private val component: TComponent
             ) {
 
                 fun connectors(ctx: ConnectorsContext.() -> Unit) {
                     component.connectors = TConnectors()
                     ConnectorsContext(
+                        components,
                         component.connectors
                     ).apply(ctx)
                 }
@@ -208,6 +211,7 @@ class SsdContext(
 
                 @Scoped
                 class ConnectorsContext(
+                    private val components: MutableList<TComponent>,
                     private val connectors: TConnectors
                 ) {
 
@@ -251,6 +255,11 @@ class SsdContext(
                         connector(name, kind).apply {
                             this.enumeration = TConnectors.Connector.Enumeration()
                         }
+                    }
+
+                    fun copyFrom(name: String) {
+                        val component = components.first { it.name == name }
+                        connectors.connector.addAll(component.connectors.connector)
                     }
 
                     @Scoped
