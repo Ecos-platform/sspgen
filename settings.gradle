@@ -7,4 +7,6 @@ pluginManagement {
 }
 
 rootProject.name = 'sspgen'
+include 'dsl'
+include 'cli'
 
