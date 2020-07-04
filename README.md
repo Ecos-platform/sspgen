@@ -21,25 +21,25 @@ ssp("TestSsdGen") {
             description = "An even simpler description"
 
             elements {
-                component("FMU1", "fmus/FMU1.fmu") {
+                component("FMU1", "resources/FMU1.fmu") {
                     connectors {
-                        real("output", Kind.output) {
+                        real("output", output) {
                             unit("m/s")
                         }
-                        real("input", Kind.input)
-                        integer("counter", Kind.output)
+                        real("input", input)
+                        integer("counter", output)
                     }
                     parameterBindings {
-                        parameterSet("initalValues") {
+                        parameterSet("initialValues") {
                             real("input", 2.0)
                             integer("counter", 99)
                         }
                     }
                 }
-                component("FMU2", "fmus/FMU2.fmu") {
+                component("FMU2", "resources/FMU2.fmu") {
                     connectors {
-                        real("input", Kind.input)
-                        real("output", Kind.output)
+                        real("input", input)
+                        real("output", output)
                     }
                 }
             }
@@ -89,7 +89,7 @@ under `/resources` and a `SystemStructure.ssd` in the root directory with the co
                 <ssd:ParameterBindings>
                     <ssd:ParameterBinding>
                         <ssd:ParameterValues>
-                            <ssv:ParameterSet version="1.0" name="initalValues">
+                            <ssv:ParameterSet version="1.0" name="initialValues">
                                 <ssv:Parameters>
                                     <ssv:Parameter name="input">
                                         <ssv:Real value="2.0"/>
