@@ -193,7 +193,7 @@ class SsdContext(
                     ).apply(ctx)
                 }
 
-                fun parameterbindings(ctx: ParameterBindingsContext.() -> Unit) {
+                fun parameterBindings(ctx: ParameterBindingsContext.() -> Unit) {
                     if (component.parameterBindings == null) {
                         component.parameterBindings = TParameterBindings()
                     }
