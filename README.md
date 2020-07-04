@@ -7,6 +7,7 @@ using a custom Domain Specific Language (DSL).
 Imagine a file named `ExampleSspGen.kts` with the following content:
 
 ```kotlin
+#!sspgen
 
 ssp("TestSsdGen") {
 
@@ -64,7 +65,7 @@ ssp("TestSsdGen") {
 
 ```
 
-Invoking the following in a shell `./ssdgen ExampleSsdGen.kts` would result
+Executiong `./ExampleSsdGen.kts` in a shell would result
 in an SSP archive named `TestSsdGen.ssp` with two FMUs and `someFile.txt` located 
 under `/resources` and a `SystemStructure.ssd` in the root directory with the content:
 
