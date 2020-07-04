@@ -2,6 +2,7 @@ package no.ntnu.ihb.sspgen
 
 import no.ntnu.ihb.sspgen.dsl.SspContext
 import no.ntnu.ihb.sspgen.schema.SystemStructureDescription
+import no.ntnu.ihb.sspgen.schema.TParameter
 import java.io.*
 import java.net.URL
 import java.util.zip.ZipEntry
@@ -77,6 +78,41 @@ fun SystemStructureDescription.toXML(): String {
 
     return xml
 }
+
+
+fun TParameter.copy(): TParameter {
+    fun TParameter.Integer.copy() = TParameter.Integer().also { p ->
+        p.value = value
+    }
+
+    fun TParameter.Real.copy() = TParameter.Real().also { p ->
+        p.value = value
+        p.unit = unit
+    }
+
+    fun TParameter.String.copy() = TParameter.String().also { p ->
+        p.value = value
+    }
+
+    fun TParameter.Enumeration.copy() = TParameter.Enumeration().also { p ->
+        p.value = value
+    }
+
+    fun TParameter.Boolean.copy() = TParameter.Boolean().also { p ->
+        p.isValue = isValue
+    }
+
+    return TParameter().also { p ->
+        p.name = name
+        p.description = description
+        p.integer = integer?.copy()
+        p.real = real?.copy()
+        p.string = string?.copy()
+        p.boolean = boolean?.copy()
+        p.enumeration = enumeration?.copy()
+    }
+}
+
 
 fun SspContext.createSSP(outputDir: File? = null) {
 

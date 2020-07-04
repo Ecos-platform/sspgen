@@ -1,9 +1,6 @@
 package no.ntnu.ihb.sspgen.dsl
 
-import no.ntnu.ihb.sspgen.FileResource
-import no.ntnu.ihb.sspgen.Resource
-import no.ntnu.ihb.sspgen.UrlResource
-import no.ntnu.ihb.sspgen.extractElementAndConnectorNames
+import no.ntnu.ihb.sspgen.*
 import no.ntnu.ihb.sspgen.schema.*
 import java.io.File
 import java.net.URL
@@ -197,10 +194,13 @@ class SsdContext(
                     if (component.parameterBindings == null) {
                         component.parameterBindings = TParameterBindings()
                     }
-                    val binding = TParameterBindings.ParameterBinding()
+                    val binding = TParameterBindings.ParameterBinding().apply {
+                        parameterValues = TParameterBindings.ParameterBinding.ParameterValues()
+                    }
                     component.parameterBindings.parameterBinding.add(binding)
                     ParameterBindingsContext(
-                        binding
+                        components,
+                        binding.parameterValues.parameterSet
                     ).apply(ctx)
                 }
 
@@ -277,7 +277,8 @@ class SsdContext(
 
                 @Scoped
                 class ParameterBindingsContext(
-                    private val binding: TParameterBindings.ParameterBinding
+                    private val components: MutableList<TComponent>,
+                    private val parameterSets: MutableList<ParameterSet>
                 ) {
 
                     fun parameterSet(name: String, ctx: ParameterSetContext.() -> Unit) {
@@ -285,29 +286,49 @@ class SsdContext(
                             this.name = name
                             this.version = "1.0"
                         }
-                        if (binding.parameterValues == null) {
-                            binding.parameterValues = TParameterBindings.ParameterBinding.ParameterValues()
-                        }
-                        binding.parameterValues.parameterSet.add(parameterSet)
+                        parameterSet.parameters = TParameters()
                         ParameterSetContext(
-                            parameterSet
+                            parameterSet.parameters.parameter
                         ).apply(ctx)
+                        parameterSets.add(parameterSet)
+                    }
+
+                    fun copyFrom(
+                        componentName: String,
+                        parameterSetName: String,
+                        ctx: (ParameterSetContext.() -> Unit)? = null
+                    ) {
+                        val copyComponent = components.first { it.name == componentName }
+                        val copyParameterSet = copyComponent.parameterBindings.parameterBinding
+                            .flatMap { it.parameterValues.parameterSet }
+                            .first { it.name == parameterSetName }
+
+                        val parameterSet = ParameterSet().apply {
+                            this.name = copyParameterSet.name
+                            this.version = "1.0"
+                        }
+                        parameterSet.parameters = TParameters().apply {
+                            parameter.addAll(copyParameterSet.parameters.parameter.map { it.copy() })
+                        }
+                        ctx?.also {
+                            ParameterSetContext(
+                                parameterSet.parameters.parameter
+                            ).apply(it)
+                        }
+                        parameterSets.add(parameterSet)
                     }
 
                     @Scoped
                     class ParameterSetContext(
-                        private val parameterSet: ParameterSet
+                        private val parameters: MutableList<TParameter>
                     ) {
 
                         private fun parameter(name: String): TParameter {
-                            val parameter = TParameter().apply {
-                                this.name = name
-                            }
-                            if (parameterSet.parameters == null) {
-                                parameterSet.parameters = TParameters()
-                            }
-                            parameterSet.parameters.parameter.add(parameter)
-                            return parameter
+                            return parameters.firstOrNull { it.name == name }
+                                ?: TParameter().apply {
+                                    this.name = name
+                                    parameters.add(this)
+                                }
                         }
 
                         fun integer(name: String, value: Int) {

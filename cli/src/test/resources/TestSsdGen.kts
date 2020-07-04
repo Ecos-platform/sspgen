@@ -40,6 +40,12 @@ ssp("TestSsdGen") {
                         real("input", Kind.input)
                         real("output", Kind.output)
                     }
+                    parameterBindings {
+                        copyFrom("FMU1", "initialValues") {
+                            boolean("per", true)
+                            real("input", -1)
+                        }
+                    }
                 }
             }
 
