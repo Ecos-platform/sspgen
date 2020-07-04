@@ -1,4 +1,3 @@
-import no.ntnu.ihb.sspgen.dsl.Kind
 import no.ntnu.ihb.sspgen.dsl.ssp
 
 ssp("TestSsdGen") {
@@ -15,11 +14,11 @@ ssp("TestSsdGen") {
             elements {
                 component("FMU1", "resources/FMU1.fmu") {
                     connectors {
-                        real("output", Kind.output) {
+                        real("output", output) {
                             unit("m/s")
                         }
-                        real("input", Kind.input)
-                        integer("counter", Kind.output)
+                        real("input", input)
+                        integer("counter", output)
                     }
                     parameterBindings {
                         parameterSet("initialValues") {
@@ -37,8 +36,8 @@ ssp("TestSsdGen") {
                 }
                 component("FMU2", "resources/FMU2.fmu") {
                     connectors {
-                        real("input", Kind.input)
-                        real("output", Kind.output)
+                        real("input", input)
+                        real("output", output)
                     }
                     parameterBindings {
                         copyFrom("FMU1", "initialValues") {

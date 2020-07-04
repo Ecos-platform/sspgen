@@ -9,10 +9,6 @@ import java.net.URL
 @Target(AnnotationTarget.CLASS, AnnotationTarget.TYPE)
 annotation class Scoped
 
-enum class Kind {
-    input, output, inout, parameter, calculatedParameter
-}
-
 fun ssp(archiveName: String, ctx: SspContext.() -> Unit): SspContext {
     return SspContext(archiveName).apply(ctx)
 }
@@ -215,20 +211,26 @@ class SsdContext(
                     private val connectors: TConnectors
                 ) {
 
-                    private fun connector(name: String, kind: Kind): TConnectors.Connector {
+                    val input = "input"
+                    val output = "output"
+                    val inout = "inout"
+                    val parameter = "parameter"
+                    val calculatedParameter = "calculatedParameter"
+
+                    private fun connector(name: String, kind: String): TConnectors.Connector {
                         return TConnectors.Connector().apply {
                             this.name = name
-                            this.kind = kind.name
+                            this.kind = kind
                         }.also { connectors.connector.add(it) }
                     }
 
-                    fun integer(name: String, kind: Kind) {
+                    fun integer(name: String, kind: String) {
                         connector(name, kind).apply {
                             this.integer = TConnectors.Connector.Integer()
                         }
                     }
 
-                    fun real(name: String, kind: Kind, ctx: (RealConnectorContext.() -> Unit)? = null) {
+                    fun real(name: String, kind: String, ctx: (RealConnectorContext.() -> Unit)? = null) {
                         val connector = connector(name, kind).apply {
                             this.real = TConnectors.Connector.Real()
                         }
@@ -239,19 +241,19 @@ class SsdContext(
                         }
                     }
 
-                    fun string(name: String, kind: Kind) {
+                    fun string(name: String, kind: String) {
                         connector(name, kind).apply {
                             this.string = TConnectors.Connector.String()
                         }
                     }
 
-                    fun boolean(name: String, kind: Kind) {
+                    fun boolean(name: String, kind: String) {
                         connector(name, kind).apply {
                             this.boolean = TConnectors.Connector.Boolean()
                         }
                     }
 
-                    fun enumeration(name: String, kind: Kind) {
+                    fun enumeration(name: String, kind: String) {
                         connector(name, kind).apply {
                             this.enumeration = TConnectors.Connector.Enumeration()
                         }
