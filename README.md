@@ -22,11 +22,11 @@ ssp("TestSsdGen") {
             elements {
                 component("FMU1", "fmus/FMU1.fmu") {
                     connectors {
-                        realConnector("output", Kind.output) {
+                        real("output", Kind.output) {
                             unit("m/s")
                         }
-                        realConnector("input", Kind.input)
-                        integerConnector("counter", Kind.output)
+                        real("input", Kind.input)
+                        integer("counter", Kind.output)
                     }
                     parameterbindings {
                         parameterSet("initalValues") {
@@ -37,8 +37,8 @@ ssp("TestSsdGen") {
                 }
                 component("FMU2", "fmus/FMU2.fmu") {
                     connectors {
-                        realConnector("input", Kind.input)
-                        realConnector("output", Kind.output)
+                        real("input", Kind.input)
+                        real("output", Kind.output)
                     }
                 }
             }

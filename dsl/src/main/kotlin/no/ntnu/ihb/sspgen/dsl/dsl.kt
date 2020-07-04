@@ -218,13 +218,13 @@ class SsdContext(
                         }.also { connectors.connector.add(it) }
                     }
 
-                    fun integerConnector(name: String, kind: Kind) {
+                    fun integer(name: String, kind: Kind) {
                         connector(name, kind).apply {
                             this.integer = TConnectors.Connector.Integer()
                         }
                     }
 
-                    fun realConnector(name: String, kind: Kind, ctx: (RealConnectorContext.() -> Unit)? = null) {
+                    fun real(name: String, kind: Kind, ctx: (RealConnectorContext.() -> Unit)? = null) {
                         val connector = connector(name, kind).apply {
                             this.real = TConnectors.Connector.Real()
                         }
@@ -235,19 +235,19 @@ class SsdContext(
                         }
                     }
 
-                    fun stringConnector(name: String, kind: Kind) {
+                    fun string(name: String, kind: Kind) {
                         connector(name, kind).apply {
                             this.string = TConnectors.Connector.String()
                         }
                     }
 
-                    fun booleanConnector(name: String, kind: Kind) {
+                    fun boolean(name: String, kind: Kind) {
                         connector(name, kind).apply {
                             this.boolean = TConnectors.Connector.Boolean()
                         }
                     }
 
-                    fun enumerationConnector(name: String, kind: Kind) {
+                    fun enumeration(name: String, kind: Kind) {
                         connector(name, kind).apply {
                             this.enumeration = TConnectors.Connector.Enumeration()
                         }
