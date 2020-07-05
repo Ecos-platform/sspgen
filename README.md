@@ -1,5 +1,5 @@
 # sspgen
-A Command Line Application for generating SSP archives from a Kotlin script
+A Command Line Application for generating [SSP](https://ssp-standard.org/) archives from a Kotlin script
 using a custom Domain Specific Language (DSL).
 
 `sspgen` will perform some validation of the `SystemStructureDefinition`, 
