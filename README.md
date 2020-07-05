@@ -130,3 +130,6 @@ under `/resources` and a `SystemStructure.ssd` in the root directory with the co
 </ssd:SystemStructureDescription>
 
 ```
+
+Another convenient feature of the DSL is the ability for copying connectors and parameterSets from one component to another.
+
