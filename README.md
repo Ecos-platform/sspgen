@@ -161,7 +161,7 @@ ssp(archiveName: String) {
                         string(name: String, kind: String)
                         boolean(name: String, kind: String)
                         enumeration(name: String, kind: String)
-                        copyOf(componentName: String) {
+                        copyFrom(componentName: String) {
                             //declare additional connectors as above
                         }       
                     }
@@ -172,7 +172,7 @@ ssp(archiveName: String) {
                             string(name: String, value: String)
                             boolean(name: String, value: Boolean)
                             enumeration(name: String, value: String)
-                            copyOf(componentName: String, parameterSetName: String) {
+                            copyFrom(componentName: String, parameterSetName: String) {
                                 //declare additional parameters or override existing ones
                             }       
                         }
@@ -223,5 +223,5 @@ ssp(archiveName: String) {
 
 #### Prebuilt sspgen executable
 
-Aside from releases, bleeding edge builds of the cli tool can be retried from GitHub Actions. 
+Aside from releases, bleeding edge builds of the cli tool can be retrieved from GitHub Actions. 
 
