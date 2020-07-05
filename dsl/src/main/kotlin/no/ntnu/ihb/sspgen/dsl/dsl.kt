@@ -109,18 +109,32 @@ class SsdContext(
 
         fun connections(inputsFirst: Boolean = false, ctx: ConnectionsContext.() -> Unit) {
             system.connections = TSystem.Connections()
-            ConnectionsContext(inputsFirst, system.connections).apply(ctx)
+            ConnectionsContext(inputsFirst, system).apply(ctx)
         }
 
         @Scoped
         class ConnectionsContext(
             private val inputsFirst: Boolean,
-            private val connections: TSystem.Connections
+            private val system: TSystem
         ) {
+
+            private val connections: TSystem.Connections = system.connections
+
+            private fun validateComponentAndConnectorExists(componentName: String, connectorName: String) {
+                system.elements.component.firstOrNull { it.name == componentName }?.also { c ->
+                    c.connectors.connector.firstOrNull { it.name == connectorName }
+                        ?: throw NoSuchElementException("No connector named '$connectorName' declared for component '$componentName'!")
+                }
+                    ?: throw NoSuchElementException("No component named '$componentName' declared for system '${system.name}'!")
+            }
 
             infix fun String.to(other: String): ConnectionContext {
                 val (e1, c1) = this.extractElementAndConnectorNames()
                 val (e2, c2) = other.extractElementAndConnectorNames()
+
+                validateComponentAndConnectorExists(e1, c1)
+                validateComponentAndConnectorExists(e2, c2)
+
                 val connection = TSystem.Connections.Connection().apply {
                     startElement = e1
                     startConnector = c1
