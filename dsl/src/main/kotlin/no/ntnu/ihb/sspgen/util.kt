@@ -115,7 +115,7 @@ internal fun TParameter.copy(): TParameter {
         p.string = string?.copy()
         p.boolean = boolean?.copy()
         p.enumeration = enumeration?.copy()
-        p.binary = binary.copy()
+        p.binary = binary?.copy()
     }
 }
 
