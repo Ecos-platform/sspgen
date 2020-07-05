@@ -103,6 +103,10 @@ internal fun TParameter.copy(): TParameter {
         p.isValue = isValue
     }
 
+    fun TParameter.Binary.copy() = TParameter.Binary().also { p ->
+        p.value = value.copyOf()
+    }
+
     return TParameter().also { p ->
         p.name = name
         p.description = description
@@ -111,6 +115,7 @@ internal fun TParameter.copy(): TParameter {
         p.string = string?.copy()
         p.boolean = boolean?.copy()
         p.enumeration = enumeration?.copy()
+        p.binary = binary.copy()
     }
 }
 
