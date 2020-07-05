@@ -403,6 +403,14 @@ class SsdContext(
                             }
                         }
 
+                        fun enumeration(name: String, value: String) {
+                            parameter(name).apply {
+                                this.enumeration = TParameter.Enumeration().apply {
+                                    this.value = value
+                                }
+                            }
+                        }
+
                     }
 
                 }
