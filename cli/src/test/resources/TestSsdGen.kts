@@ -38,10 +38,11 @@ ssp("TestSsdGen") {
                     connectors {
                         real("input", input)
                         real("output", output)
+                        boolean("boolean", calculatedParameter)
                     }
                     parameterBindings {
                         copyFrom("FMU1", "initialValues") {
-                            boolean("per", true)
+                            boolean("boolean", true)
                             real("input", -1)
                         }
                     }

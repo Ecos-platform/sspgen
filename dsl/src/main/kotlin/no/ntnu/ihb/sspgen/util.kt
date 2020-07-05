@@ -2,6 +2,7 @@ package no.ntnu.ihb.sspgen
 
 import no.ntnu.ihb.sspgen.dsl.SspContext
 import no.ntnu.ihb.sspgen.schema.SystemStructureDescription
+import no.ntnu.ihb.sspgen.schema.TConnectors
 import no.ntnu.ihb.sspgen.schema.TParameter
 import java.io.*
 import java.net.URL
@@ -80,7 +81,7 @@ fun SystemStructureDescription.toXML(): String {
 }
 
 
-fun TParameter.copy(): TParameter {
+internal fun TParameter.copy(): TParameter {
     fun TParameter.Integer.copy() = TParameter.Integer().also { p ->
         p.value = value
     }
@@ -113,6 +114,17 @@ fun TParameter.copy(): TParameter {
     }
 }
 
+internal fun TConnectors.Connector.typeName(): String {
+    return when {
+        integer != null -> "Integer"
+        real != null -> "Real"
+        string != null -> "String"
+        boolean != null -> "Boolean"
+        enumeration != null -> "Enumeration"
+        binary != null -> "Binary"
+        else -> throw IllegalArgumentException()
+    }
+}
 
 fun SspContext.createSSP(outputDir: File? = null) {
 
