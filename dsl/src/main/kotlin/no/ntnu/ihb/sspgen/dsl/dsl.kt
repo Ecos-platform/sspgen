@@ -76,6 +76,12 @@ class SsdContext(
             ssd.license = value
         }
 
+    var fileVersion: String?
+        get() = ssd.fileversion
+        set(value) {
+            ssd.fileversion = value
+        }
+
     fun system(name: String, ctx: SystemContext.() -> Unit) {
         ssd.system = TSystem().apply { this.name = name }
         SystemContext(ssd.system).apply(ctx)
