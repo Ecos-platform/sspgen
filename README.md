@@ -133,5 +133,95 @@ under `/resources` and a `SystemStructure.ssd` in the root directory with the co
 
 Another convenient feature of the DSL is the ability for copying connectors and parameterSets from one component to another.
 
-Aside from releases, bleeding edge builds of the cli tool can be retrived from GitHub Actions. 
+
+#### API
+
+```kotlin 
+ssp(archiveName: String) {
+
+    ssd(name: String) {
+
+        author: String
+        description: String
+        fileVersion: String
+        copyright: String
+        license: String
+        
+        system(name: String) {
+
+            description: String
+
+            elements {
+                component(name: String, source: String) {
+                    connectors {
+                        integer(name: String, kind: String)
+                        real(name: String, kind: String) {
+                            unit(name: String)
+                        }
+                        string(name: String, kind: String)
+                        boolean(name: String, kind: String)
+                        enumeration(name: String, kind: String)
+                        copyOf(componentName: String) {
+                            //declare additional connectors as above
+                        }       
+                    }
+                    parameterSets {
+                        parameterSet(name: String) {
+                            integer(name: String, value: Int)
+                            real(name: String, value: Number)
+                            string(name: String, value: String)
+                            boolean(name: String, value: Boolean)
+                            enumeration(name: String, value: String)
+                            copyOf(componentName: String, parameterSetName: String) {
+                                //declare additional parameters or override existing ones
+                            }       
+                        }
+                    }              
+                    annotations {
+                        annotation(rawString: String) {
+                            // e.g: 
+                            """
+                            <MyElement>
+                                <ChildElement value="something"/>
+                            </MyElement>
+                            """
+                        }       
+                    }
+                }
+            }
+            connections(inputsFirst: Boolean = false) {
+                "StartElement.StartConnector" to "EndElement.EndConnector" //inputsFirst=true swaps this
+            }        
+        }
+
+        defaultExperiment(startTime: Number, stopTime: Number) {       
+            annotations {
+                annotation(rawString: String) {
+                    // e.g: 
+                    """
+                    <MyElement>
+                        <ChildElement value="something"/>
+                    </MyElement>
+                    """
+                }   
+    
+            }
+
+        }
+
+    }
+
+    resources {
+        file(path: String)
+        url(path: String)
+    }
+
+}
+
+```
+
+
+#### Prebuilt sspgen executable
+
+Aside from releases, bleeding edge builds of the cli tool can be retried from GitHub Actions. 
 
