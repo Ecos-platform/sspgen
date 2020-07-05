@@ -5,7 +5,7 @@ using a custom Domain Specific Language (DSL).
 `sspgen` will perform some validation of the `SystemStructureDefinition`, 
 e.g. checking that connectors exists and that connections are made between the same variable type.
 
-Resources bundled with the generated `.ssp` may be specified as both local files and remote URLs.
+Resources bundled with the generated `.ssp` may be specified both as local files and remote URLs.
 
 ### Example
 
