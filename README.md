@@ -133,3 +133,5 @@ under `/resources` and a `SystemStructure.ssd` in the root directory with the co
 
 Another convenient feature of the DSL is the ability for copying connectors and parameterSets from one component to another.
 
+Aside from releases, bleeding edge builds of the cli tool can be retrived from GitHub Actions. 
+
