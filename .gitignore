@@ -28,3 +28,5 @@ gradle.properties
 !gradle/wrapper/gradle-wrapper.jar
 
 *.ssp
+
+SSP1
