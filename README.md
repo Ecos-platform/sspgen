@@ -2,7 +2,7 @@
 A Command Line Application for generating SSP archives from a Kotlin script
 using a custom Domain Specific Language (DSL).
 
-`sspgen` will perform some validation of the SystemStructureDefinitions, 
+`sspgen` will perform some validation of the `SystemStructureDefinition`, 
 e.g. checking that connectors exists and that connections are made between the same variable type.
 
 Resources bundled with the generated `.ssp` may be specified as both local files and remote URLs.
