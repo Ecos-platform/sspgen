@@ -10,13 +10,16 @@ wrapper {
 
 println "Gradle version is ${gradle.getGradleVersion()}"
 
+group 'no.ntnu.ihb.sspgen'
+version = rootProject.file("VERSION").newReader().readLine()
+println("Building ${project.name} v$version")
+
 subprojects { sub ->
 
     apply plugin: 'java'
 
-    group 'no.ntnu.ihb.sspgen'
-    version = rootProject.file("VERSION").newReader().readLine()
-    println("Building ${project.name} v$version")
+    group = rootProject.group
+    version = rootProject.version
 
     repositories {
         mavenCentral()
