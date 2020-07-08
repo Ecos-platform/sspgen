@@ -1,0 +1,19 @@
+
+if (hasProperty("bintrayUser") && hasProperty("bintrayKey")) {
+
+    bintray {
+        user = bintrayUser
+        key = bintrayKey
+        publish = true
+        setPublications("maven")
+        pkg {
+            userOrg = "ntnu-ihb"
+            repo = "mvn"
+            name = "sspgen"
+            websiteUrl = "https://github.com/NTNU-IHB/sspgen"
+            vcsUrl = "https://github.com/NTNU-IHB/sspgen"
+            setLicenses("MIT")
+        }
+    }
+
+}
