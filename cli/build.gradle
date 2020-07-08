@@ -6,14 +6,9 @@ plugins {
 
 dependencies {
 
-    compile project(':dsl')
+    implementation project(':dsl')
 
     compile group: 'info.picocli', name: 'picocli', version: '4.3.2'
-
-    compile 'org.jetbrains.kotlin:kotlin-script-util'
-    runtimeOnly 'org.jetbrains.kotlin:kotlin-script-runtime'
-    compile 'org.jetbrains.kotlin:kotlin-compiler-embeddable'
-    compile 'org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable'
 
 }
 

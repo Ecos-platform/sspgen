@@ -1,0 +1,33 @@
+plugins {
+    id 'kotlin'
+    id 'java-gradle-plugin'
+    id 'com.gradle.plugin-publish' version "0.12.0"
+}
+
+apply from: rootProject.file("gradle/mavenpublish.gradle")
+
+dependencies {
+    implementation project(':dsl')
+}
+
+gradlePlugin {
+    plugins {
+        sspgenPlugin {
+            id = 'no.ntnu.ihb.sspgen'
+            implementationClass = 'no.ntnu.ihb.sspgen.SSPGenPlugin'
+        }
+    }
+}
+
+pluginBundle {
+    website = "https://github.com/NTNU-IHB/sspgen"
+    vcsUrl = "https://github.com/NTNU-IHB/sspgen"
+    description = "A plugin for invoking sspgen from gradle"
+    tags = ["gradle", "sspgen"]
+    plugins {
+        sspgenPlugin {
+            displayName = "Gradle sspgen plugin"
+        }
+    }
+}
+
