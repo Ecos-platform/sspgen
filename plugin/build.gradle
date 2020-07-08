@@ -2,3 +2,13 @@ plugins {
     id 'kotlin'
     id 'java-gradle-plugin'
 }
+
+gradlePlugin {
+    plugins {
+        sspgen {
+            id = 'no.ntnu.ihb.sspgen'
+            implementationClass = 'no.ntnu.ihb.sspgen.SSPGenPlugin'
+        }
+    }
+}
+
