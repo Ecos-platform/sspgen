@@ -18,19 +18,23 @@ class SSPGenPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         project.extensions.create("sspgen", SSPGenPluginExtension::class.java).also { ext ->
 
-            val task = project.task("invoke")
-            task.group = "sspgen"
-            task.doLast {
-                val outputDir: File? = ext.outputDir?.let { File(it) }
+            project.task("invoke").apply {
 
-                ext.urls.map { URL(it) }.forEach { url ->
-                    println("Downloading sspgen-definitions '$it'")
-                    evaluateScript(url.openStream(), outputDir)
+                group = "sspgen"
+
+                doLast {
+                    val outputDir: File? = ext.outputDir?.let { File(it) }
+
+                    ext.urls.map { URL(it) }.forEach { url ->
+                        println("Building sspgen-definition from url: '$url'")
+                        evaluateScript(url.openStream(), outputDir)
+                    }
+                    ext.files.map { File(it) }.forEach { file ->
+                        println("Building sspgen-definition from file: '$file'")
+                        evaluateScript(file.inputStream(), outputDir)
+                    }
                 }
-                ext.files.map { File(it) }.forEach { file ->
-                    println("Downloading sspgen-definitions '$it'")
-                    evaluateScript(file.inputStream(), outputDir)
-                }
+
             }
 
         }
