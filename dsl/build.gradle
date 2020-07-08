@@ -1,6 +1,37 @@
 plugins {
     id 'kotlin'
     id 'java-library'
+    id "com.jfrog.bintray" version "1.8.4"
 }
 
 apply from: rootProject.file("gradle/mavenpublish.gradle")
+
+dependencies {
+
+    implementation 'org.jetbrains.kotlin:kotlin-script-util'
+    runtimeOnly 'org.jetbrains.kotlin:kotlin-script-runtime'
+    implementation 'org.jetbrains.kotlin:kotlin-compiler-embeddable'
+    implementation 'org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable'
+
+}
+
+if (hasProperty("bintrayUser") && hasProperty("bintrayKey")) {
+
+    bintray {
+        user = bintrayUser
+        key = bintrayKey
+        publish = true
+        publications = ["maven"]
+        pkg {
+            userOrg = "ntnu-ihb"
+            repo = "mvn"
+            name = "sspgen"
+            websiteUrl = "https://github.com/NTNU-IHB/sspgen"
+            vcsUrl = "https://github.com/NTNU-IHB/sspgen"
+            licenses = ["MIT"]
+        }
+    }
+
+}
+
+
