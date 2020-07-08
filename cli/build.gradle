@@ -2,6 +2,7 @@ plugins {
     id 'kotlin'
     id 'application'
     id 'distribution'
+//    id 'no.ntnu.ihb.sspgen' version '0.1.0'
 }
 
 dependencies {

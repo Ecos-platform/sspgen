@@ -5,4 +5,24 @@ plugins {
 }
 
 apply from: rootProject.file("gradle/mavenpublish.gradle")
-apply from: rootProject.file("gradle/bintraypublish.gradle")
+
+if (hasProperty("bintrayUser") && hasProperty("bintrayKey")) {
+
+    bintray {
+        user = bintrayUser
+        key = bintrayKey
+        publish = true
+        publications = ["maven"]
+        pkg {
+            userOrg = "ntnu-ihb"
+            repo = "mvn"
+            name = "sspgen"
+            websiteUrl = "https://github.com/NTNU-IHB/sspgen"
+            vcsUrl = "https://github.com/NTNU-IHB/sspgen"
+            licenses = ["MIT"]
+        }
+    }
+
+}
+
+
