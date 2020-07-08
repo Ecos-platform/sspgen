@@ -8,6 +8,7 @@ import java.io.*
 import java.net.URL
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
+import javax.script.ScriptEngineManager
 import javax.xml.bind.JAXB
 
 internal fun String.extractElementAndConnectorNames(): Pair<String, String> {
@@ -162,6 +163,29 @@ fun SspContext.createSSP(outputDir: File? = null) {
             zos.closeEntry()
         }
 
+    }
+
+}
+
+fun evaluateScript(inputStream: InputStream, outputDir: File? = null) {
+
+    val readScript = inputStream.bufferedReader().use {
+        it.readLines()
+    }
+
+    System.setProperty("idea.io.use.nio2", "true")
+
+    val import = "import no.ntnu.ihb.sspgen.dsl.*"
+
+    ScriptEngineManager().getEngineByExtension("kts").apply {
+        val scriptContent = readScript.toMutableList()
+        if (!scriptContent.contains(import)) {
+            val insertionPoint = if (scriptContent[0].startsWith("#!")) 1 else 0
+            scriptContent.add(insertionPoint, import)
+        }
+        (eval(scriptContent.joinToString("\n")) as SspContext).apply {
+            createSSP(outputDir)
+        }
     }
 
 }

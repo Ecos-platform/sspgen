@@ -1,9 +1,7 @@
 package no.ntnu.ihb.sspgen
 
-import no.ntnu.ihb.sspgen.dsl.SspContext
 import picocli.CommandLine
 import java.io.File
-import javax.script.ScriptEngineManager
 
 @CommandLine.Command
 class SSPGenerator : Runnable {
@@ -25,21 +23,7 @@ class SSPGenerator : Runnable {
 
         require(scriptFile.exists())
         require(scriptFile.extension == "kts")
-
-        System.setProperty("idea.io.use.nio2", "true")
-
-        val import = "import no.ntnu.ihb.sspgen.dsl.*"
-
-        ScriptEngineManager().getEngineByExtension("kts").apply {
-            val scriptContent = scriptFile.readLines().toMutableList()
-            if (!scriptContent.contains(import)) {
-                val insertionPoint = if (scriptContent[0].startsWith("#!")) 1 else 0
-                scriptContent.add(insertionPoint, import)
-            }
-            (eval(scriptContent.joinToString("\n")) as SspContext).apply {
-                createSSP(outputDir)
-            }
-        }
+        evaluateScript(scriptFile.inputStream(), outputDir)
 
     }
 
