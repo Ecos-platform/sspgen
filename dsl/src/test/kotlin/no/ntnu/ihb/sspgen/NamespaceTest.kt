@@ -12,7 +12,7 @@ internal class NamespaceTest {
 
         evaluateScript(script.openStream()).apply {
             val xml = ssdXml()
-            Assertions.assertTrue("xlmns:osp=" in xml)
+            Assertions.assertTrue("xmlns:osp=" in xml)
         }
 
     }

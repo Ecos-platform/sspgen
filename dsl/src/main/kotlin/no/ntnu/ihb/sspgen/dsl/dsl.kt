@@ -39,7 +39,7 @@ class SspContext(
     inner class NamespaceContext {
 
         fun namespace(namespace: String, uri: String) {
-            namespaces.add("xlmns:$namespace=\"$uri\"")
+            namespaces.add("xmlns:$namespace=\"$uri\"")
         }
 
     }
