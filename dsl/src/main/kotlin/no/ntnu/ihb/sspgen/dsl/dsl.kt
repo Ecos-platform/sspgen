@@ -175,15 +175,15 @@ class SsdContext(
                 private val connection: TSystem.Connections.Connection
             ) {
 
-                fun annotations(ctx: AnnotationsContext.() -> Unit) {
+                fun annotations(ctx: RootAnnotationsContext.() -> Unit) {
                     connection.annotations = TAnnotations()
-                    AnnotationsContext(connection.annotations).apply(ctx)
+                    RootAnnotationsContext(connection.annotations).apply(ctx)
                 }
 
                 fun linearTransformation(factor: Number? = null, offset: Number? = null) {
                     connection.linearTransformation = TSystem.Connections.Connection.LinearTransformation().apply {
-                        this.offset = offset?.toDouble() ?: 0.0
-                        this.factor = factor?.toDouble() ?: 1.0
+                        offset?.toDouble()?.also { this.offset = it }
+                        factor?.toDouble()?.also { this.factor = it }
                     }
                 }
 
@@ -239,9 +239,9 @@ class SsdContext(
                     ).apply(ctx)
                 }
 
-                fun annotations(ctx: AnnotationsContext.() -> Unit) {
+                fun annotations(ctx: ComponentAnnotationsContext.() -> Unit) {
                     component.annotations = TAnnotations()
-                    AnnotationsContext(component.annotations).apply(ctx)
+                    ComponentAnnotationsContext(components, component.annotations).apply(ctx)
                 }
 
                 @Scoped
@@ -426,7 +426,29 @@ class SsdContext(
     }
 
     @Scoped
-    class AnnotationsContext(
+    class ComponentAnnotationsContext(
+        private val components: MutableList<TComponent>,
+        private val annotations: TAnnotations
+    ) {
+
+        fun annotation(type: String, content: () -> String) {
+            val annotation = TAnnotations.Annotation().apply {
+                this.type = type
+                this.any = content.invoke()
+            }
+            annotations.annotation.add(annotation)
+        }
+
+        fun copyFrom(name: String) {
+            val component = components.firstOrNull { it.name == name }
+                ?: throw NoSuchElementException("No component named '$name'!")
+            annotations.annotation.addAll(component.annotations.annotation)
+        }
+
+    }
+
+    @Scoped
+    class RootAnnotationsContext(
         private val annotations: TAnnotations
     ) {
 
@@ -445,9 +467,9 @@ class SsdContext(
         private val defaultExperiment: TDefaultExperiment
     ) {
 
-        fun annotations(ctx: AnnotationsContext.() -> Unit) {
+        fun annotations(ctx: RootAnnotationsContext.() -> Unit) {
             defaultExperiment.annotations = TAnnotations()
-            AnnotationsContext(defaultExperiment.annotations).apply(ctx)
+            RootAnnotationsContext(defaultExperiment.annotations).apply(ctx)
         }
 
     }
