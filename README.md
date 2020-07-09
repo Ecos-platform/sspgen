@@ -220,6 +220,26 @@ ssp(archiveName: String) {
 
 ```
 
+#### Gradle plugin
+
+sspgen exists as a gradle plugin.
+To use it, add the following to `settings.gradle`:
+
+```groovy
+pluginManagement {
+    repositories {
+        mavenCentral()
+        maven { url "https://plugins.gradle.org/m2/" }
+        maven { url "https://dl.bintray.com/ntnu-ihb/mvn" }
+    }
+}
+```
+
+And apply the plugin as usual:
+
+```groovy
+id 'no.ntnu.ihb.sspgen' version '0.1.1'
+```
 
 #### Prebuilt sspgen executable
 
