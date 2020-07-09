@@ -161,7 +161,7 @@ class SsdContext(
                 if (inputsFirst) {
                     connection.startElement = connection.endElement
                     connection.startConnector = connection.startConnector
-                    connection.endElement = connection.endConnector
+                    connection.endElement = connection.startElement
                     connection.endConnector = connection.startConnector
                 }
                 connections.connection.add(connection)
