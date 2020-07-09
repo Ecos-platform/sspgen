@@ -152,18 +152,19 @@ class SsdContext(
                 validateConnectionTypes(connector1, connector2)
 
                 val connection = TSystem.Connections.Connection().apply {
-                    startElement = e1
-                    startConnector = c1
-                    endElement = e2
-                    endConnector = c2
+                    if (inputsFirst) {
+                        startElement = e2
+                        startConnector = c2
+                        endElement = e1
+                        endConnector = c1
+                    } else {
+                        startElement = e1
+                        startConnector = c1
+                        endElement = e2
+                        endConnector = c2
+                    }
                 }
 
-                if (inputsFirst) {
-                    connection.startElement = connection.endElement
-                    connection.startConnector = connection.startConnector
-                    connection.endElement = connection.startElement
-                    connection.endConnector = connection.startConnector
-                }
                 connections.connection.add(connection)
                 return ConnectionContext(
                     connection
