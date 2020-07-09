@@ -23,7 +23,9 @@ class SSPGenerator : Runnable {
 
         require(scriptFile.exists())
         require(scriptFile.extension == "kts")
-        evaluateScript(scriptFile.inputStream(), outputDir)
+        evaluateScript(scriptFile.inputStream()).apply {
+            createSSP(outputDir)
+        }
 
     }
 

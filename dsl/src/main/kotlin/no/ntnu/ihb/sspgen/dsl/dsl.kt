@@ -19,6 +19,7 @@ class SspContext(
 
     val ssd: SystemStructureDescription = SystemStructureDescription()
     val resources = mutableListOf<Resource>()
+    val namespaces = mutableListOf<String>()
 
     fun ssd(name: String, ctx: SsdContext.() -> Unit) {
         ssd.name = name
@@ -27,8 +28,20 @@ class SspContext(
         SsdContext(ssd).apply(ctx)
     }
 
+    fun namespaces(ctx: NamespaceContext.() -> Unit) {
+        NamespaceContext().apply(ctx)
+    }
+
     fun resources(ctx: ResourcesContext.() -> Unit) {
         ResourcesContext().apply(ctx)
+    }
+
+    inner class NamespaceContext {
+
+        fun namespace(namespace: String, uri: String) {
+            namespaces.add("xlmns:$namespace=\"$uri\"")
+        }
+
     }
 
     inner class ResourcesContext {

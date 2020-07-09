@@ -1,7 +1,6 @@
 package no.ntnu.ihb.sspgen
 
 import no.ntnu.ihb.sspgen.dsl.SspContext
-import no.ntnu.ihb.sspgen.schema.SystemStructureDescription
 import no.ntnu.ihb.sspgen.schema.TConnectors
 import no.ntnu.ihb.sspgen.schema.TParameter
 import java.io.*
@@ -60,10 +59,12 @@ class UrlResource(
 
 }
 
-fun SystemStructureDescription.toXML(): String {
-    val bos = ByteArrayOutputStream()
-    JAXB.marshal(this, bos)
-    var xml = bos.toString()
+fun SspContext.ssdXml(): String {
+
+    var xml = ByteArrayOutputStream().apply {
+        JAXB.marshal(ssd, this)
+    }.toString()
+
     xml = xml.replace("ns2:", "ssd:")
     xml = xml.replace("ns3:", "ssc:")
     xml = xml.replace("ns4:", "ssv:")
@@ -77,6 +78,13 @@ fun SystemStructureDescription.toXML(): String {
     xml = xml.replace("&lt;", "<")
     xml = xml.replace("/&gt;", "/>")
     xml = xml.replace("&gt;", ">")
+
+    if (namespaces.isNotEmpty()) {
+        val indexOf = xml.indexOf("xmlns")
+        namespaces.forEach { namespace ->
+            xml = xml.substring(0, indexOf) + "$namespace " + xml.substring(indexOf)
+        }
+    }
 
     return xml
 }
@@ -150,7 +158,7 @@ fun SspContext.createSSP(outputDir: File? = null) {
     ZipOutputStream(BufferedOutputStream(FileOutputStream(sspArchive))).use { zos ->
 
         zos.putNextEntry(ZipEntry("SystemStructure.ssd"))
-        zos.write(ssd.toXML().toByteArray())
+        zos.write(ssdXml().toByteArray())
         zos.closeEntry()
 
         if (resources.isNotEmpty()) {
@@ -167,7 +175,7 @@ fun SspContext.createSSP(outputDir: File? = null) {
 
 }
 
-fun evaluateScript(inputStream: InputStream, outputDir: File? = null) {
+fun evaluateScript(inputStream: InputStream): SspContext {
 
     val readScript = inputStream.bufferedReader().use {
         it.readLines()
@@ -183,9 +191,7 @@ fun evaluateScript(inputStream: InputStream, outputDir: File? = null) {
             val insertionPoint = if (scriptContent[0].startsWith("#!")) 1 else 0
             scriptContent.add(insertionPoint, import)
         }
-        (eval(scriptContent.joinToString("\n")) as SspContext).apply {
-            createSSP(outputDir)
-        }
+        return eval(scriptContent.joinToString("\n")) as SspContext
     }
 
 }
