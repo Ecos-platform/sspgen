@@ -185,7 +185,8 @@ ssp(archiveName: String) {
                                 <ChildElement value="something"/>
                             </MyElement>
                             """
-                        }       
+                        }
+                        copyFrom(component: String)       
                     }
                 }
             }
@@ -209,6 +210,10 @@ ssp(archiveName: String) {
 
         }
 
+    }
+
+    namespaces {
+        namespace(namespace: String, uri: String)
     }
 
     resources {
@@ -238,7 +243,16 @@ pluginManagement {
 And apply the plugin as usual:
 
 ```groovy
-id 'no.ntnu.ihb.sspgen' version '0.1.1'
+plugins {
+    id 'no.ntnu.ihb.sspgen' version '0.1.1'
+}
+
+sspgen {
+    outputDir: String
+    files: List<String>
+    urls: List<String>
+}
+
 ```
 
 #### Prebuilt sspgen executable
