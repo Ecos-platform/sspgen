@@ -299,7 +299,8 @@ class SsdContext(
                     }
 
                     fun copyFrom(name: String) {
-                        val component = components.first { it.name == name }
+                        val component = components.firstOrNull { it.name == name }
+                            ?: throw NoSuchElementException("No component named '$name'!")
                         connectors.connector.addAll(component.connectors.connector)
                     }
 
@@ -339,10 +340,12 @@ class SsdContext(
                         parameterSetName: String,
                         ctx: (ParameterSetContext.() -> Unit)? = null
                     ) {
-                        val copyComponent = components.first { it.name == componentName }
+                        val copyComponent = components.firstOrNull { it.name == componentName }
+                            ?: throw NoSuchElementException("No component named '$componentName'!")
                         val copyParameterSet = copyComponent.parameterBindings.parameterBinding
                             .flatMap { it.parameterValues.parameterSet }
-                            .first { it.name == parameterSetName }
+                            .firstOrNull { it.name == parameterSetName }
+                            ?: throw NoSuchElementException("No parameterSet named '$parameterSetName' in component '$componentName'!")
 
                         val parameterSet = ParameterSet().apply {
                             this.name = copyParameterSet.name
