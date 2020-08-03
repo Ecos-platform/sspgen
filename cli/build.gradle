@@ -5,11 +5,8 @@ plugins {
 }
 
 dependencies {
-
     implementation project(':dsl')
-
-    compile group: 'info.picocli', name: 'picocli', version: '4.3.2'
-
+    implementation group: 'info.picocli', name: 'picocli', version: '4.3.2'
 }
 
 mainClassName = "no.ntnu.ihb.sspgen.SSPGenerator"
@@ -20,7 +17,7 @@ application {
 
 distributions {
     main {
-        baseName('sspgen')
+        baseName = 'sspgen'
     }
 }
 
@@ -28,3 +25,4 @@ startScripts {
     applicationName = 'sspgen'
 }
 
+build.finalizedBy installDist
