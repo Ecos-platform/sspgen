@@ -165,7 +165,7 @@ ssp(archiveName: String) {
                             //declare additional connectors as above
                         }       
                     }
-                    parameterSets {
+                    parameterBindings {
                         parameterSet(name: String) {
                             integer(name: String, value: Int)
                             real(name: String, value: Number)
