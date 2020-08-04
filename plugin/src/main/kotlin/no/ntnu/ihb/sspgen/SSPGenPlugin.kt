@@ -3,6 +3,7 @@ package no.ntnu.ihb.sspgen
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import java.io.File
+import java.net.URI
 import java.net.URL
 
 open class SSPGenPluginExtension {
@@ -42,6 +43,11 @@ class SSPGenPlugin : Plugin<Project> {
             }
 
         }
+
+        project.repositories.maven {
+            it.url= URI("https://dl.bintray.com/ntnu-ihb/mvn")
+        }
+
     }
 
 }
