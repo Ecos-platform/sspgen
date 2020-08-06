@@ -13,6 +13,10 @@ dependencies {
     implementation 'org.jetbrains.kotlin:kotlin-compiler-embeddable'
     implementation 'org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable'
 
+    implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
+    runtimeOnly group: 'com.sun.xml.bind', name: 'jaxb-impl', version: '2.3.2'
+    runtimeOnly group: 'com.sun.xml.bind', name: 'jaxb-core', version: '2.3.0.1'
+
 }
 
 def generatedSourceDir = new File(buildDir, "generated/src/main/kotlin")
