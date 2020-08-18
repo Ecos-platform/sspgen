@@ -1,10 +1,13 @@
 package no.ntnu.ihb.sspgen
 
+import no.ntnu.ihb.sspgen.dsl.SspContext
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import java.io.File
+import java.io.InputStream
 import java.net.URI
 import java.net.URL
+import javax.script.ScriptEngineManager
 
 open class SSPGenPluginExtension {
 
@@ -51,3 +54,25 @@ class SSPGenPlugin : Plugin<Project> {
     }
 
 }
+
+private fun evaluateScript(inputStream: InputStream): SspContext {
+
+    val readScript = inputStream.bufferedReader().use {
+        it.readLines()
+    }
+
+    System.setProperty("idea.io.use.nio2", "true")
+
+    val import = "import no.ntnu.ihb.sspgen.dsl.*"
+
+    ScriptEngineManager().getEngineByExtension("kts").apply {
+        val scriptContent = readScript.toMutableList()
+        if (!scriptContent.contains(import)) {
+            val insertionPoint = if (scriptContent[0].startsWith("#!")) 1 else 0
+            scriptContent.add(insertionPoint, import)
+        }
+        return eval(scriptContent.joinToString("\n")) as SspContext
+    }
+
+}
+

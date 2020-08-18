@@ -1,11 +1,11 @@
 plugins {
     id 'base'
-    id 'org.jetbrains.kotlin.jvm' version '1.3.72' apply(false)
+    id 'org.jetbrains.kotlin.jvm' version '1.4.0' apply(false)
 }
 
 wrapper {
     distributionType = Wrapper.DistributionType.ALL
-    gradleVersion = '6.5.1'
+    gradleVersion = '6.6'
 }
 
 println "Gradle version is ${gradle.getGradleVersion()}"
@@ -40,7 +40,7 @@ subprojects { sub ->
     pluginManager.withPlugin('kotlin') {
 
         dependencies {
-            compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+            implementation "org.jetbrains.kotlin:kotlin-stdlib"
         }
 
         compileKotlin {

@@ -2,8 +2,12 @@ package no.ntnu.ihb.sspgen.dsl
 
 import no.ntnu.ihb.sspgen.*
 import no.ntnu.ihb.sspgen.schema.*
+import java.io.BufferedOutputStream
 import java.io.File
+import java.io.FileOutputStream
 import java.net.URL
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
 
 @DslMarker
 @Target(AnnotationTarget.CLASS, AnnotationTarget.TYPE)
@@ -54,6 +58,41 @@ class SspContext(
 
         fun url(urlString: String) {
             resources.add(UrlResource(URL(urlString)))
+        }
+
+    }
+
+    fun build(outputDir: File? = null) {
+
+        val fileName = if (archiveName.endsWith(".ssp")) {
+            archiveName
+        } else {
+            "$archiveName.ssp"
+        }
+
+        val sspArchive = if (outputDir == null) {
+            File(fileName)
+        } else {
+            outputDir.mkdirs()
+            File(outputDir, fileName)
+        }
+
+        ZipOutputStream(BufferedOutputStream(FileOutputStream(sspArchive))).use { zos ->
+
+            zos.putNextEntry(ZipEntry("SystemStructure.ssd"))
+            zos.write(ssdXml().toByteArray())
+            zos.closeEntry()
+
+            if (resources.isNotEmpty()) {
+                zos.putNextEntry(ZipEntry("resources/"))
+                resources.forEach {
+                    zos.putNextEntry(ZipEntry("resources/${it.name}"))
+                    zos.write(it.readBytes())
+                    zos.closeEntry()
+                }
+                zos.closeEntry()
+            }
+
         }
 
     }
