@@ -11,7 +11,7 @@ Resources bundled with the generated `.ssp` may be specified both as local files
 
 Download the [kotlin-compiler](https://github.com/JetBrains/kotlin/releases/tag/v1.4.0) and add the bin folder to PATH. 
 
-OR, simply run the script in the context of IntelliJ, which additioanlly adds script auto completion.
+OR, simply run the script in the context of IntelliJ, which additionally adds script auto completion.
 
 
 ### Example
