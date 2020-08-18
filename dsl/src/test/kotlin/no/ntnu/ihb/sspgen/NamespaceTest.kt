@@ -1,5 +1,6 @@
 package no.ntnu.ihb.sspgen
 
+import no.ntnu.ihb.sspgen.dsl.ssp
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
@@ -8,12 +9,17 @@ internal class NamespaceTest {
     @Test
     fun testNamespace() {
 
-        val script = NamespaceTest::class.java.classLoader.getResource("namespace.kts")!!
+        val xml = ssp("") {
 
-        evaluateScript(script.openStream()).apply {
-            val xml = ssdXml()
-            Assertions.assertTrue("xmlns:osp=" in xml)
-        }
+            ssd("") {}
+
+            namespaces {
+                namespace("osp", "http://opensimulationplatform.com/SSP/OSPAnnotations")
+            }
+
+        }.ssdXml()
+
+        Assertions.assertTrue("xmlns:osp=" in xml)
 
     }
 

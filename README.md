@@ -1,18 +1,31 @@
 # sspgen
-A Command Line Application for generating [SSP](https://ssp-standard.org/) archives from a Kotlin script
-using a custom Domain Specific Language (DSL).
+A Kotlin DSL for generating [SSP](https://ssp-standard.org/) archives.
 
 `sspgen` will perform some validation of the `SystemStructureDefinition`, 
 e.g. checking that connectors exists and that connections are made between the same variable type.
 
 Resources bundled with the generated `.ssp` may be specified both as local files and remote URLs.
 
+
+#### Pre-requisites
+
+Download the [kotlin-compiler](https://github.com/JetBrains/kotlin/releases/tag/v1.4.0) and add the bin folder to PATH. 
+
+
 ### Example
 
-Imagine a file named `ExampleSspGen.kts` with the following content:
+Imagine a file named `ExampleSspGen.main.kts` with the following content:
+
+_note_: File names MUST end with `.main.kts`
 
 ```kotlin
-#!sspgen
+#!kotlin
+
+@file:Repository("https://dl.bintray.com/ntnu-ihb/mvn")
+@file:DependsOn("no.ntnu.ihb.sspgen:dsl:0.2.0")
+
+import no.ntnu.ihb.sspgen.createSSP
+import no.ntnu.ihb.sspgen.dsl.ssp
 
 ssp("TestSsdGen") {
 
@@ -66,11 +79,11 @@ ssp("TestSsdGen") {
         url("example.com/someFile.txt")
     }
 
-}
+}.build()
 
 ```
 
-Executing `./ExampleSsdGen.kts` in a shell would result
+Executing `./ExampleSsdGen.main.kts` in a shell would result
 in an SSP archive named `TestSsdGen.ssp` with two FMUs and `someFile.txt` located 
 under `/resources` and a `SystemStructure.ssd` in the root directory with the content:
 
@@ -225,6 +238,7 @@ ssp(archiveName: String) {
 
 ```
 
+
 #### Gradle plugin
 
 sspgen exists as a gradle plugin.
@@ -244,7 +258,7 @@ And apply the plugin as usual:
 
 ```groovy
 plugins {
-    id 'no.ntnu.ihb.sspgen' version '0.1.3'
+    id 'no.ntnu.ihb.sspgen' version '0.2.0'
 }
 
 sspgen {
@@ -254,8 +268,3 @@ sspgen {
 }
 
 ```
-
-#### Prebuilt sspgen executable
-
-Aside from releases, bleeding edge builds of the cli tool can be retrieved from GitHub Actions. 
-

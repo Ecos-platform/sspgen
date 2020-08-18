@@ -140,7 +140,7 @@ internal fun TConnectors.Connector.typeName(): String {
     }
 }
 
-fun SspContext.createSSP(outputDir: File? = null) {
+fun SspContext.build(outputDir: File? = null) {
 
     val fileName = if (archiveName.endsWith(".ssp")) {
         archiveName

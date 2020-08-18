@@ -27,9 +27,4 @@ jobs:
           java-version: 1.8
 
       - name: Build with Gradle
-        run: ./gradlew clean build installDist
-
-      - uses: actions/upload-artifact@master
-        with:
-          name: sspgen
-          path: cli/build/install/sspgen
+        run: ./gradlew clean build

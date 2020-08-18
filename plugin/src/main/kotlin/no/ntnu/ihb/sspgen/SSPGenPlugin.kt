@@ -29,13 +29,13 @@ class SSPGenPlugin : Plugin<Project> {
                     ext.urls.map { URL(it) }.forEach { url ->
                         println("Building sspgen-definition from url: '$url'")
                         evaluateScript(url.openStream()).apply {
-                            createSSP(outputDir)
+                            build(outputDir)
                         }
                     }
                     ext.files.map { File(it) }.forEach { file ->
                         println("Building sspgen-definition from file: '$file'")
                         evaluateScript(file.inputStream()).apply {
-                            createSSP(outputDir)
+                            build(outputDir)
                         }
                     }
                 }
