@@ -1,4 +1,3 @@
 rootProject.name = 'sspgen'
 include 'dsl'
-include 'cli'
 include 'plugin'
