@@ -26,8 +26,7 @@ _note_: File names MUST end with `.main.kts`
 @file:Repository("https://dl.bintray.com/ntnu-ihb/mvn")
 @file:DependsOn("no.ntnu.ihb.sspgen:dsl:0.2.0")
 
-import no.ntnu.ihb.sspgen.createSSP
-import no.ntnu.ihb.sspgen.dsl.ssp
+import no.ntnu.ihb.sspgen.dsl.*
 
 ssp("TestSsdGen") {
 
