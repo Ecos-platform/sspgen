@@ -3,11 +3,10 @@ package no.ntnu.ihb.sspgen
 import no.ntnu.ihb.sspgen.dsl.SspContext
 import no.ntnu.ihb.sspgen.schema.TConnectors
 import no.ntnu.ihb.sspgen.schema.TParameter
-import java.io.*
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileInputStream
 import java.net.URL
-import java.util.zip.ZipEntry
-import java.util.zip.ZipOutputStream
-import javax.script.ScriptEngineManager
 import javax.xml.bind.JAXB
 
 internal fun String.extractElementAndConnectorNames(): Pair<String, String> {
@@ -35,7 +34,7 @@ class FileResource(
 
     override fun readBytes(): ByteArray {
         return FileInputStream(file).buffered().use {
-            readBytes()
+            it.readBytes()
         }
     }
 
