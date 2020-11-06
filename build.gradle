@@ -1,11 +1,11 @@
 plugins {
     id 'base'
-    id 'org.jetbrains.kotlin.jvm' version '1.4.0' apply(false)
+    id 'org.jetbrains.kotlin.jvm' version '1.4.10' apply(false)
 }
 
 wrapper {
     distributionType = Wrapper.DistributionType.ALL
-    gradleVersion = '6.6'
+    gradleVersion = '6.7'
 }
 
 println "Gradle version is ${gradle.getGradleVersion()}"
