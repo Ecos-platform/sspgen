@@ -160,6 +160,10 @@ class SsdContext(
 
         var description: String? = system.description
 
+        init {
+            system.connectors = TConnectors()
+        }
+
         fun elements(ctx: ElementsContext.() -> Unit) {
             system.elements = TSystem.Elements()
             ElementsContext(system).apply(ctx)
@@ -168,6 +172,11 @@ class SsdContext(
         fun connections(inputsFirst: Boolean = false, ctx: ConnectionsContext.() -> Unit) {
             system.connections = TSystem.Connections()
             ConnectionsContext(inputsFirst, system).apply(ctx)
+        }
+
+        fun annotations(ctx: AnnotationsContext.() -> Unit) {
+            system.annotations = TAnnotations()
+            AnnotationsContext(system.annotations).apply(ctx)
         }
 
         @Scoped
@@ -227,9 +236,9 @@ class SsdContext(
                 private val connection: TSystem.Connections.Connection
             ) {
 
-                fun annotations(ctx: RootAnnotationsContext.() -> Unit) {
+                fun annotations(ctx: AnnotationsContext.() -> Unit) {
                     connection.annotations = TAnnotations()
-                    RootAnnotationsContext(connection.annotations).apply(ctx)
+                    AnnotationsContext(connection.annotations).apply(ctx)
                 }
 
                 fun linearTransformation(factor: Number? = null, offset: Number? = null) {
@@ -294,79 +303,6 @@ class SsdContext(
                 fun annotations(ctx: ComponentAnnotationsContext.() -> Unit) {
                     component.annotations = TAnnotations()
                     ComponentAnnotationsContext(components, component.annotations).apply(ctx)
-                }
-
-                @Scoped
-                class ConnectorsContext(
-                    private val components: MutableList<TComponent>,
-                    private val connectors: TConnectors
-                ) {
-
-                    val input = "input"
-                    val output = "output"
-                    val inout = "inout"
-                    val parameter = "parameter"
-                    val calculatedParameter = "calculatedParameter"
-
-                    private fun connector(name: String, kind: String): TConnectors.Connector {
-                        return TConnectors.Connector().apply {
-                            this.name = name
-                            this.kind = kind
-                        }.also { connectors.connector.add(it) }
-                    }
-
-                    fun integer(name: String, kind: String) {
-                        connector(name, kind).apply {
-                            this.integer = TConnectors.Connector.Integer()
-                        }
-                    }
-
-                    fun real(name: String, kind: String, ctx: (RealConnectorContext.() -> Unit)? = null) {
-                        val connector = connector(name, kind).apply {
-                            this.real = TConnectors.Connector.Real()
-                        }
-                        ctx?.also {
-                            RealConnectorContext(
-                                connector.real
-                            ).apply(it)
-                        }
-                    }
-
-                    fun string(name: String, kind: String) {
-                        connector(name, kind).apply {
-                            this.string = TConnectors.Connector.String()
-                        }
-                    }
-
-                    fun boolean(name: String, kind: String) {
-                        connector(name, kind).apply {
-                            this.boolean = TConnectors.Connector.Boolean()
-                        }
-                    }
-
-                    fun enumeration(name: String, kind: String) {
-                        connector(name, kind).apply {
-                            this.enumeration = TConnectors.Connector.Enumeration()
-                        }
-                    }
-
-                    fun copyFrom(name: String) {
-                        val component = components.firstOrNull { it.name == name }
-                            ?: throw NoSuchElementException("No component named '$name'!")
-                        connectors.connector.addAll(component.connectors.connector)
-                    }
-
-                    @Scoped
-                    class RealConnectorContext(
-                        private val real: TConnectors.Connector.Real
-                    ) {
-
-                        fun unit(value: String) {
-                            real.unit = value
-                        }
-
-                    }
-
                 }
 
                 @Scoped
@@ -478,6 +414,79 @@ class SsdContext(
     }
 
     @Scoped
+    class ConnectorsContext(
+            private val components: MutableList<TComponent>,
+            private val connectors: TConnectors
+    ) {
+
+        val input = "input"
+        val output = "output"
+        val inout = "inout"
+        val parameter = "parameter"
+        val calculatedParameter = "calculatedParameter"
+
+        private fun connector(name: String, kind: String): TConnectors.Connector {
+            return TConnectors.Connector().apply {
+                this.name = name
+                this.kind = kind
+            }.also { connectors.connector.add(it) }
+        }
+
+        fun integer(name: String, kind: String) {
+            connector(name, kind).apply {
+                this.integer = TConnectors.Connector.Integer()
+            }
+        }
+
+        fun real(name: String, kind: String, ctx: (RealConnectorContext.() -> Unit)? = null) {
+            val connector = connector(name, kind).apply {
+                this.real = TConnectors.Connector.Real()
+            }
+            ctx?.also {
+                RealConnectorContext(
+                        connector.real
+                ).apply(it)
+            }
+        }
+
+        fun string(name: String, kind: String) {
+            connector(name, kind).apply {
+                this.string = TConnectors.Connector.String()
+            }
+        }
+
+        fun boolean(name: String, kind: String) {
+            connector(name, kind).apply {
+                this.boolean = TConnectors.Connector.Boolean()
+            }
+        }
+
+        fun enumeration(name: String, kind: String) {
+            connector(name, kind).apply {
+                this.enumeration = TConnectors.Connector.Enumeration()
+            }
+        }
+
+        fun copyFrom(name: String) {
+            val component = components.firstOrNull { it.name == name }
+                    ?: throw NoSuchElementException("No component named '$name'!")
+            connectors.connector.addAll(component.connectors.connector)
+        }
+
+        @Scoped
+        class RealConnectorContext(
+                private val real: TConnectors.Connector.Real
+        ) {
+
+            fun unit(value: String) {
+                real.unit = value
+            }
+
+        }
+
+    }
+
+    @Scoped
     class ComponentAnnotationsContext(
         private val components: MutableList<TComponent>,
         private val annotations: TAnnotations
@@ -500,7 +509,7 @@ class SsdContext(
     }
 
     @Scoped
-    class RootAnnotationsContext(
+    class AnnotationsContext(
         private val annotations: TAnnotations
     ) {
 
@@ -519,9 +528,9 @@ class SsdContext(
         private val defaultExperiment: TDefaultExperiment
     ) {
 
-        fun annotations(ctx: RootAnnotationsContext.() -> Unit) {
+        fun annotations(ctx: AnnotationsContext.() -> Unit) {
             defaultExperiment.annotations = TAnnotations()
-            RootAnnotationsContext(defaultExperiment.annotations).apply(ctx)
+            AnnotationsContext(defaultExperiment.annotations).apply(ctx)
         }
 
     }
