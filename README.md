@@ -24,7 +24,7 @@ _note_: File names MUST end with `.main.kts`
 #!kotlin
 
 @file:Repository("https://dl.bintray.com/ntnu-ihb/mvn")
-@file:DependsOn("no.ntnu.ihb.sspgen:dsl:0.3.1")
+@file:DependsOn("no.ntnu.ihb.sspgen:dsl:0.3.4")
 
 import no.ntnu.ihb.sspgen.dsl.*
 
