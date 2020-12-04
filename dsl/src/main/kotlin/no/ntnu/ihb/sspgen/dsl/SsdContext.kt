@@ -1,103 +1,6 @@
 package no.ntnu.ihb.sspgen.dsl
 
-import no.ntnu.ihb.sspgen.*
 import no.ntnu.ihb.sspgen.schema.*
-import java.io.BufferedOutputStream
-import java.io.File
-import java.io.FileOutputStream
-import java.net.URL
-import java.util.zip.ZipEntry
-import java.util.zip.ZipOutputStream
-
-@DslMarker
-@Target(AnnotationTarget.CLASS, AnnotationTarget.TYPE)
-annotation class Scoped
-
-fun ssp(archiveName: String, ctx: SspContext.() -> Unit): SspContext {
-    return SspContext(archiveName).apply(ctx)
-}
-
-class SspContext(
-    val archiveName: String
-) {
-
-    val ssd: SystemStructureDescription = SystemStructureDescription()
-    val resources = mutableListOf<Resource>()
-    val namespaces = mutableListOf<String>()
-
-    fun ssd(name: String, ctx: SsdContext.() -> Unit) {
-        ssd.name = name
-        ssd.version = "1.0"
-        ssd.generationTool = "sspgen"
-        SsdContext(ssd).apply(ctx)
-    }
-
-    fun namespaces(ctx: NamespaceContext.() -> Unit) {
-        NamespaceContext().apply(ctx)
-    }
-
-    fun resources(ctx: ResourcesContext.() -> Unit) {
-        ResourcesContext().apply(ctx)
-    }
-
-    inner class NamespaceContext {
-
-        fun namespace(namespace: String, uri: String) {
-            namespaces.add("xmlns:$namespace=\"$uri\"")
-        }
-
-    }
-
-    inner class ResourcesContext {
-
-        fun file(filePath: String) {
-            val file = File(filePath)
-            if (!file.exists()) throw NoSuchFileException(file)
-            resources.add(FileResource(file))
-        }
-
-        fun url(urlString: String) {
-            resources.add(UrlResource(URL(urlString)))
-        }
-
-    }
-
-    fun build(outputDir: File? = null) {
-
-        val fileName = if (archiveName.endsWith(".ssp")) {
-            archiveName
-        } else {
-            "$archiveName.ssp"
-        }
-
-        val sspArchive = if (outputDir == null) {
-            File(fileName)
-        } else {
-            outputDir.mkdirs()
-            File(outputDir, fileName)
-        }
-
-        ZipOutputStream(BufferedOutputStream(FileOutputStream(sspArchive))).use { zos ->
-
-            zos.putNextEntry(ZipEntry("SystemStructure.ssd"))
-            zos.write(ssdXml().toByteArray())
-            zos.closeEntry()
-
-            if (resources.isNotEmpty()) {
-                zos.putNextEntry(ZipEntry("resources/"))
-                resources.forEach {
-                    zos.putNextEntry(ZipEntry("resources/${it.name}"))
-                    zos.write(it.readBytes())
-                    zos.closeEntry()
-                }
-                zos.closeEntry()
-            }
-
-        }
-
-    }
-
-}
 
 @Scoped
 class SsdContext(
@@ -415,8 +318,8 @@ class SsdContext(
 
     @Scoped
     class ConnectorsContext(
-            private val components: MutableList<TComponent>,
-            private val connectors: TConnectors
+        private val components: MutableList<TComponent>,
+        private val connectors: TConnectors
     ) {
 
         val input = "input"
@@ -444,7 +347,7 @@ class SsdContext(
             }
             ctx?.also {
                 RealConnectorContext(
-                        connector.real
+                    connector.real
                 ).apply(it)
             }
         }
@@ -469,13 +372,13 @@ class SsdContext(
 
         fun copyFrom(name: String) {
             val component = components.firstOrNull { it.name == name }
-                    ?: throw NoSuchElementException("No component named '$name'!")
+                ?: throw NoSuchElementException("No component named '$name'!")
             connectors.connector.addAll(component.connectors.connector)
         }
 
         @Scoped
         class RealConnectorContext(
-                private val real: TConnectors.Connector.Real
+            private val real: TConnectors.Connector.Real
         ) {
 
             fun unit(value: String) {

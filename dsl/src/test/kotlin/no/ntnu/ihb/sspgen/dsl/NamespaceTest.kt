@@ -1,6 +1,5 @@
-package no.ntnu.ihb.sspgen
+package no.ntnu.ihb.sspgen.dsl
 
-import no.ntnu.ihb.sspgen.dsl.ssp
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
