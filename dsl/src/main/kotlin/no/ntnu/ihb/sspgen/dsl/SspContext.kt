@@ -24,7 +24,6 @@ class SspContext(
     private val ssd: SystemStructureDescription = SystemStructureDescription()
     private val resources = mutableListOf<Resource>()
     private val namespaces = mutableListOf<String>()
-    private val modelDescriptions = mutableListOf<ModelDescription>()
 
     fun ssd(name: String, ctx: SsdContext.() -> Unit) {
         ssd.name = name
@@ -69,8 +68,8 @@ class SspContext(
 
     fun ssdXml(): String {
 
-        var xml = ByteArrayOutputStream().apply {
-            JAXB.marshal(ssd, this)
+        var xml = ByteArrayOutputStream().use { baos ->
+            JAXB.marshal(ssd, baos)
         }.toString()
 
         xml = xml.replace("ns2:", "ssd:")
@@ -137,37 +136,37 @@ class SspContext(
 
         }
 
-        fun build(outputDir: File? = null) {
+    }
 
-            val fileName = if (archiveName.endsWith(".ssp")) {
-                archiveName
-            } else {
-                "$archiveName.ssp"
-            }
+    fun build(outputDir: File? = null) {
 
-            val sspArchive = if (outputDir == null) {
-                File(fileName)
-            } else {
-                outputDir.mkdirs()
-                File(outputDir, fileName)
-            }
+        val fileName = if (archiveName.endsWith(".ssp")) {
+            archiveName
+        } else {
+            "$archiveName.ssp"
+        }
 
-            ZipOutputStream(FileOutputStream(sspArchive).buffered()).use { zos ->
+        val sspArchive = if (outputDir == null) {
+            File(fileName)
+        } else {
+            outputDir.mkdirs()
+            File(outputDir, fileName)
+        }
 
-                zos.putNextEntry(ZipEntry("SystemStructure.ssd"))
-                zos.write(ssdXml().toByteArray())
-                zos.closeEntry()
+        ZipOutputStream(FileOutputStream(sspArchive).buffered()).use { zos ->
 
-                if (resources.isNotEmpty()) {
-                    zos.putNextEntry(ZipEntry(SOURCE_PREFIX))
-                    resources.forEach {
-                        zos.putNextEntry(ZipEntry("SOURCE_PREFIX${it.name}"))
-                        zos.write(it.readBytes())
-                        zos.closeEntry()
-                    }
+            zos.putNextEntry(ZipEntry("SystemStructure.ssd"))
+            zos.write(ssdXml().toByteArray())
+            zos.closeEntry()
+
+            if (resources.isNotEmpty()) {
+                zos.putNextEntry(ZipEntry(SOURCE_PREFIX))
+                resources.forEach {
+                    zos.putNextEntry(ZipEntry("SOURCE_PREFIX${it.name}"))
+                    zos.write(it.readBytes())
                     zos.closeEntry()
                 }
-
+                zos.closeEntry()
             }
 
         }
