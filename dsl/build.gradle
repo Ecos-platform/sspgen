@@ -6,17 +6,11 @@ plugins {
 
 apply from: rootProject.file("gradle/mavenpublish.gradle")
 
-repositories {
-    maven { url "https://dl.bintray.com/ntnu-ihb/mvn" }
-}
-
 dependencies {
 
     api group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
     api group: 'org.glassfish.jaxb', name: 'jaxb-core', version: '2.3.0.1'
     api group: 'org.glassfish.jaxb', name: 'jaxb-runtime', version: '2.3.3'
-
-    implementation 'no.ntnu.ihb.fmi4j:fmi-import:0.36.3'
 
 }
 

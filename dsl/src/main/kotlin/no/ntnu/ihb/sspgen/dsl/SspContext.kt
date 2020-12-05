@@ -70,7 +70,8 @@ class SspContext(
 
         var xml = ByteArrayOutputStream().use { baos ->
             JAXB.marshal(ssd, baos)
-        }.toString()
+            baos.toString()
+        }
 
         xml = xml.replace("ns2:", "ssd:")
         xml = xml.replace("ns3:", "ssc:")
