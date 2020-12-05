@@ -1,6 +1,6 @@
 package no.ntnu.ihb.sspgen.dsl
 
-import no.ntnu.ihb.sspgen.schema.*
+import no.ntnu.ihb.sspgen.ssp.*
 
 @Scoped
 class SsdContext(

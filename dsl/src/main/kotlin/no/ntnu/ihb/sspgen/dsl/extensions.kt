@@ -1,7 +1,7 @@
 package no.ntnu.ihb.sspgen.dsl
 
-import no.ntnu.ihb.sspgen.schema.TConnectors
-import no.ntnu.ihb.sspgen.schema.TParameter
+import no.ntnu.ihb.sspgen.ssp.TConnectors
+import no.ntnu.ihb.sspgen.ssp.TParameter
 
 internal fun String.extractElementAndConnectorNames(): Pair<String, String> {
     val i = indexOf('.')

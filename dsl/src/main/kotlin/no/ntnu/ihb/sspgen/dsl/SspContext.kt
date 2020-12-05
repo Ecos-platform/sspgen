@@ -2,7 +2,7 @@ package no.ntnu.ihb.sspgen.dsl
 
 import no.ntnu.ihb.fmi4j.modeldescription.ModelDescription
 import no.ntnu.ihb.fmi4j.modeldescription.ModelDescriptionParser
-import no.ntnu.ihb.sspgen.schema.SystemStructureDescription
+import no.ntnu.ihb.sspgen.ssp.SystemStructureDescription
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
