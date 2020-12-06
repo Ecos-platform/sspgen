@@ -65,6 +65,7 @@ class SsdContext(
 
         init {
             system.connectors = TConnectors()
+            system.connections = TSystem.Connections()
         }
 
         fun elements(ctx: ElementsContext.() -> Unit) {
@@ -73,8 +74,11 @@ class SsdContext(
         }
 
         fun connections(inputsFirst: Boolean = false, ctx: ConnectionsContext.() -> Unit) {
-            system.connections = TSystem.Connections()
             ConnectionsContext(inputsFirst, system).apply(ctx)
+        }
+
+        fun ospConnections(ctx: OspConnectionsContext.() -> Unit) {
+            //OspConnectionsContext(system)
         }
 
         fun annotations(ctx: AnnotationsContext.() -> Unit) {
