@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test
 class QuarterTruckTest {
 
     @Test
-    fun testQuarterTruck() {
+    fun testValidQuarterTruck() {
 
         val ssp = ssp("QuarterTruck") {
 
@@ -64,6 +64,42 @@ class QuarterTruckTest {
         }
 
         Assertions.assertDoesNotThrow {
+            ssp.validate()
+        }
+
+    }
+
+    @Test
+    fun testInvalidQuarterTruck() {
+
+        val ssp = ssp("QuarterTruck") {
+
+            ssd("QuarterTruck") {
+
+                system("QuarterTruck") {
+
+                    elements {
+
+                        component("chassis", "resources/chassis.fmu") {
+                            connectors {
+                                real("p.s", output)
+                                real("p.d", input)
+                            }
+                        }
+                    }
+
+                }
+
+            }
+
+            resources {
+                val fmuPath = QuarterTruckTest::class.java.classLoader.getResource("quarter-truck")!!.file
+                file("$fmuPath/chassis.fmu")
+            }
+
+        }
+
+        Assertions.assertThrows(IllegalStateException::class.java) {
             ssp.validate()
         }
 
