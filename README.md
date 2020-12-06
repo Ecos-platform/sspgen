@@ -29,6 +29,12 @@ _note_: File names MUST end with `.main.kts`
 import no.ntnu.ihb.sspgen.dsl.*
 
 ssp("TestSsdGen") {
+    
+    resources {
+        file("path/to/FMU1.fmu")
+        file("path/to/FMU2.fmu")
+        url("example.com/someFile.txt")
+    }
 
     ssd("A simple CLI test") {
 
@@ -72,12 +78,6 @@ ssp("TestSsdGen") {
 
         defaultExperiment(startTime = 1.0)
 
-    }
-
-    resources {
-        file("path/to/FMU1.fmu")
-        file("path/to/FMU2.fmu")
-        url("example.com/someFile.txt")
     }
 
 }.build()

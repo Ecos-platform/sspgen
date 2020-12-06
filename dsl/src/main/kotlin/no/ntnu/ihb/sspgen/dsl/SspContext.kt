@@ -21,6 +21,8 @@ class SspContext(
     private val archiveName: String
 ) {
 
+    var validate = true
+
     private val ssd: SystemStructureDescription = SystemStructureDescription()
     private val resources = mutableListOf<Resource>()
     private val namespaces = mutableListOf<String>()
@@ -30,14 +32,14 @@ class SspContext(
     }
 
     internal val ospModelDescriptions by lazy {
-        retrieveModelDescriptions()
+        retrieveOspModelDescriptions()
     }
 
     fun ssd(name: String, ctx: SsdContext.() -> Unit) {
         ssd.name = name
         ssd.version = "1.0"
         ssd.generationTool = "sspgen"
-        SsdContext(ssd).apply(ctx)
+        SsdContext(ssd, modelDescriptions, ospModelDescriptions).apply(ctx)
     }
 
     fun namespaces(ctx: NamespaceContext.() -> Unit) {
@@ -106,6 +108,11 @@ class SspContext(
     }
 
     private fun retrieveModelDescriptions(): Map<String, ModelDescription> {
+
+        if (validate && resources.isEmpty()) {
+            throw IllegalStateException("No resources has been defined. Resources must be defined prior to ssd!")
+        }
+
         val modelDescriptions = mutableMapOf<String, ModelDescription>()
         resources.forEach { resource ->
             if (resource.name.endsWith(".fmu")) {
@@ -121,10 +128,11 @@ class SspContext(
         ZipInputStream(`is`.buffered()).use { zis ->
             var zipEntry: ZipEntry? = zis.nextEntry
             while (zipEntry != null) {
-                if (zipEntry.name == "OspModelDescription.xml") {
-                    InputStreamReader(zis).buffered().useLines {
-                        return JAXB.unmarshal(zis.reader().buffered(), OspModelDescriptionType::class.java)
+                if (zipEntry.name.endsWith("OspModelDescription.xml")) {
+                    val xml = InputStreamReader(zis).buffered().useLines {
+                        it.joinToString("\n")
                     }
+                    return JAXB.unmarshal(StringReader(xml), OspModelDescriptionType::class.java)
                 }
                 zis.closeEntry()
                 zipEntry = zis.nextEntry
@@ -134,22 +142,22 @@ class SspContext(
     }
 
     private fun retrieveOspModelDescriptions(): Map<String, OspModelDescriptionType> {
-        val modelDescriptions = mutableMapOf<String, OspModelDescriptionType>()
+        val ospModelDescriptions = mutableMapOf<String, OspModelDescriptionType>()
         resources.forEach { resource ->
             if (resource.name.endsWith(".fmu")) {
                 extractOspModelDescription(resource.openStream())?.also { ospMd ->
-                    modelDescriptions[resource.name] = ospMd
+                    ospModelDescriptions[resource.name] = ospMd
                 }
             }
         }
-        return modelDescriptions
+        return ospModelDescriptions
     }
 
     internal fun validate() {
 
         ssd.system.elements.component.forEach { component ->
 
-            val fmuName = component.source.replace(SOURCE_PREFIX, "")
+            val fmuName = component.getSourceFileName()
             val md = modelDescriptions[fmuName]
                 ?: throw IllegalStateException("No modelDescription affiliated with $fmuName!")
 
@@ -174,6 +182,8 @@ class SspContext(
     }
 
     fun build(outputDir: File? = null) {
+
+        if (validate) validate()
 
         val fileName = if (archiveName.endsWith(".ssp")) {
             archiveName
@@ -208,8 +218,8 @@ class SspContext(
 
     }
 
-    private companion object {
-        private const val SOURCE_PREFIX = "resources/"
+    internal companion object {
+        const val SOURCE_PREFIX = "resources/"
     }
 
 }

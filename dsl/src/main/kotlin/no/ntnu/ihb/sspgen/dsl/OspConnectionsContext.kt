@@ -1,7 +1,10 @@
 package no.ntnu.ihb.sspgen.dsl
 
+import no.ntnu.ihb.fmi4j.modeldescription.ModelDescription
+import no.ntnu.ihb.fmi4j.modeldescription.variables.Causality
 import no.ntnu.ihb.sspgen.osp.OspModelDescriptionType
 import no.ntnu.ihb.sspgen.osp.VariableType
+import no.ntnu.ihb.sspgen.ssp.TComponent
 import no.ntnu.ihb.sspgen.ssp.TSystem
 import javax.xml.bind.annotation.XmlElement
 
@@ -9,12 +12,12 @@ class VariableGroupIdentifier(
     str: String
 ) {
 
-    val component: String
+    val componentName: String
     val groupName: String
 
     init {
         str.extractElementAndConnectorNames().also {
-            component = it.first
+            componentName = it.first
             groupName = it.second
         }
     }
@@ -23,6 +26,7 @@ class VariableGroupIdentifier(
 
 class OspConnectionsContext(
     private val system: TSystem,
+    private val modelDescriptions: Map<String, ModelDescription>,
     private val ospModelDescriptions: Map<String, OspModelDescriptionType>
 ) {
 
@@ -33,8 +37,12 @@ class OspConnectionsContext(
 
             f1.getAnnotation(XmlElement::class.java)?.also { annotation ->
                 if (annotation.name.toLowerCase().contains("port")) {
+                    f1.isAccessible = true
                     (f1.get(vgs) as? List<*>)?.onEach { e ->
-                        val name = e!!.javaClass.getField("name").get(e)
+                        val name = e!!.javaClass.getDeclaredField("name").let {
+                            it.isAccessible = true
+                            it.get(e)
+                        }
                         if (name == this.groupName) {
                             return e
                         }
@@ -51,7 +59,8 @@ class OspConnectionsContext(
         val types = mutableListOf<Any>()
         this.javaClass.declaredFields.forEach { f1 ->
             f1.getAnnotation(XmlElement::class.java)?.also {
-                if (it.name.toLowerCase().contains("type")) {
+                if (f1.type.name.toLowerCase().contains("type")) {
+                    f1.isAccessible = true
                     types.add(f1.get(this))
                 }
             }
@@ -61,13 +70,31 @@ class OspConnectionsContext(
 
     private fun Any.getVariables(): List<VariableType> {
         val refs = mutableListOf<VariableType>()
-        this.javaClass.declaredFields.forEach { f1 ->
-            val variables = this.javaClass.getField("variable") as List<*>
-            variables.forEach { variable ->
-                refs.add(variable as VariableType)
-            }
+        val variables = this.javaClass.getDeclaredField("variable").let {
+            it.isAccessible = true
+            it.get(this) as List<*>
+        }
+        variables.forEach { variable ->
+            refs.add(variable as VariableType)
         }
         return refs
+    }
+
+    private fun VariableGroupIdentifier.getComponent(): TComponent {
+        return system.elements.component.firstOrNull { it.name == this.componentName }
+            ?: throw IllegalStateException("No component named '${this.componentName}'")
+    }
+
+    private fun VariableGroupIdentifier.getModelDescription(): ModelDescription {
+        val component = getComponent()
+        return modelDescriptions[component.getSourceFileName()]
+            ?: throw IllegalStateException("No modelDescription.xml available for component '${this.componentName}'")
+    }
+
+    private fun VariableGroupIdentifier.getOspModelDescription(): OspModelDescriptionType {
+        val component = getComponent()
+        return ospModelDescriptions[component.getSourceFileName()]
+            ?: throw IllegalStateException("No OspModelDescription.xml available for component '${this.componentName}'")
     }
 
     infix fun String.to(other: String) {
@@ -75,10 +102,11 @@ class OspConnectionsContext(
         val vgi1 = VariableGroupIdentifier(this)
         val vgi2 = VariableGroupIdentifier(other)
 
-        val osp1 = ospModelDescriptions[vgi1.component]
-            ?: throw IllegalStateException("No OspModelDescription.xml available for component '$vgi1'")
-        val osp2 = ospModelDescriptions[vgi2.component]
-            ?: throw IllegalStateException("No OspModelDescription.xml available for component '$vgi2'")
+        val md1 = vgi1.getModelDescription()
+        val md2 = vgi2.getModelDescription()
+
+        val osp1 = vgi1.getOspModelDescription()
+        val osp2 = vgi2.getOspModelDescription()
 
         val vg1 = vgi1.getOspVariableGroup(osp1)
         val vg2 = vgi2.getOspVariableGroup(osp2)
@@ -87,6 +115,9 @@ class OspConnectionsContext(
 
         val types1 = vg1.getTypes()
         val types2 = vg2.getTypes()
+
+        require(types1.isNotEmpty())
+        require(types2.isNotEmpty())
 
         require(types1.size == types2.size) { "Dimension mismatch" }
 
@@ -104,10 +135,21 @@ class OspConnectionsContext(
                 val ref2 = v2[j].ref
 
                 TSystem.Connections.Connection().also { connection ->
-                    connection.startElement = vgi1.component
-                    connection.startConnector = ref1
-                    connection.endElement = vgi1.component
-                    connection.endConnector = ref2
+
+                    when (md1.modelVariables.getByName(ref1).causality) {
+                        Causality.CALCULATED_PARAMETER, Causality.OUTPUT -> {
+                            connection.startElement = vgi1.componentName
+                            connection.startConnector = ref1
+                            connection.endElement = vgi2.componentName
+                            connection.endConnector = ref2
+                        }
+                        else -> {
+                            connection.startElement = vgi2.componentName
+                            connection.startConnector = ref2
+                            connection.endElement = vgi1.componentName
+                            connection.endConnector = ref1
+                        }
+                    }
                     system.connections.connection.add(connection)
                 }
 

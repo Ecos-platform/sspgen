@@ -3,54 +3,14 @@ package no.ntnu.ihb.sspgen.dsl
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
-class QuarterTruckTest {
+class QuarterTruckOspTest {
 
     @Test
-    fun testValidQuarterTruck() {
+    fun testOspModelDescriptionRetrieval() {
         Assertions.assertDoesNotThrow {
             validSspDefinition.validate()
         }
-    }
-
-    @Test
-    fun testInvalidQuarterTruck() {
-
-        val ssp = ssp("QuarterTruck") {
-
-            resources {
-                val fmuPath = QuarterTruckTest::class.java.classLoader.getResource("quarter-truck")!!.file
-                file("$fmuPath/chassis.fmu")
-            }
-
-            ssd("QuarterTruck") {
-
-                system("QuarterTruck") {
-
-                    elements {
-
-                        component("chassis", "resources/chassis.fmu") {
-                            connectors {
-                                real("p.s", output)
-                                real("p.d", input)
-                            }
-                        }
-                    }
-
-                }
-
-            }
-
-        }
-
-        Assertions.assertThrows(IllegalStateException::class.java) {
-            ssp.validate()
-        }
-
-    }
-
-    @Test
-    fun testModelDescriptionRetrieval() {
-        Assertions.assertEquals(3, validSspDefinition.modelDescriptions.size)
+        Assertions.assertEquals(3, validSspDefinition.ospModelDescriptions.size)
     }
 
     private companion object {
@@ -58,7 +18,7 @@ class QuarterTruckTest {
         val validSspDefinition = ssp("QuarterTruck") {
 
             resources {
-                val cl = QuarterTruckTest::class.java.classLoader
+                val cl = QuarterTruckOspTest::class.java.classLoader
                 val fmuPath = cl.getResource("quarter-truck")!!.file
                 file("$fmuPath/chassis.fmu")
                 file("$fmuPath/wheel.fmu")
@@ -96,13 +56,9 @@ class QuarterTruckTest {
 
                     }
 
-                    connections {
-
-                        "chassis.p.e" to "wheel.p1.e"
-                        "wheel.p1.f" to "chassis.p.f"
-                        "wheel.p.e" to "ground.p.e"
-                        "ground.p.f" to "wheel.p.f"
-
+                    ospConnections {
+                        "chassis.linear mechanical port" to "wheel.chassis port"
+                        "wheel.ground port" to "ground.linear mechanical port"
                     }
 
                 }
