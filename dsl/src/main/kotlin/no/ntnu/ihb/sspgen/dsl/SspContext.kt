@@ -2,13 +2,13 @@ package no.ntnu.ihb.sspgen.dsl
 
 import no.ntnu.ihb.fmi4j.modeldescription.ModelDescription
 import no.ntnu.ihb.fmi4j.modeldescription.ModelDescriptionParser
+import no.ntnu.ihb.fmi4j.modeldescription.util.FmiModelDescriptionUtil
+import no.ntnu.ihb.sspgen.osp.OspModelDescriptionType
 import no.ntnu.ihb.sspgen.ssp.SystemStructureDescription
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.FileOutputStream
+import java.io.*
 import java.net.URL
 import java.util.zip.ZipEntry
+import java.util.zip.ZipInputStream
 import java.util.zip.ZipOutputStream
 import javax.xml.bind.JAXB
 
@@ -24,6 +24,14 @@ class SspContext(
     private val ssd: SystemStructureDescription = SystemStructureDescription()
     private val resources = mutableListOf<Resource>()
     private val namespaces = mutableListOf<String>()
+
+    internal val modelDescriptions by lazy {
+        retrieveModelDescriptions()
+    }
+
+    internal val ospModelDescriptions by lazy {
+        retrieveModelDescriptions()
+    }
 
     fun ssd(name: String, ctx: SsdContext.() -> Unit) {
         ssd.name = name
@@ -101,17 +109,43 @@ class SspContext(
         val modelDescriptions = mutableMapOf<String, ModelDescription>()
         resources.forEach { resource ->
             if (resource.name.endsWith(".fmu")) {
-                val md = ByteArrayInputStream(resource.readBytes()).use {
-                    ModelDescriptionParser.parse(it)
-                }
+                val xml = FmiModelDescriptionUtil.extractModelDescriptionXml(resource.openStream())
+                val md = ModelDescriptionParser.parse(xml)
                 modelDescriptions[resource.name] = md
             }
         }
         return modelDescriptions
     }
 
+    private fun extractOspModelDescription(`is`: InputStream): OspModelDescriptionType? {
+        ZipInputStream(`is`.buffered()).use { zis ->
+            var zipEntry: ZipEntry? = zis.nextEntry
+            while (zipEntry != null) {
+                if (zipEntry.name == "OspModelDescription.xml") {
+                    InputStreamReader(zis).buffered().useLines {
+                        return JAXB.unmarshal(zis.reader().buffered(), OspModelDescriptionType::class.java)
+                    }
+                }
+                zis.closeEntry()
+                zipEntry = zis.nextEntry
+            }
+        }
+        return null
+    }
+
+    private fun retrieveOspModelDescriptions(): Map<String, OspModelDescriptionType> {
+        val modelDescriptions = mutableMapOf<String, OspModelDescriptionType>()
+        resources.forEach { resource ->
+            if (resource.name.endsWith(".fmu")) {
+                extractOspModelDescription(resource.openStream())?.also { ospMd ->
+                    modelDescriptions[resource.name] = ospMd
+                }
+            }
+        }
+        return modelDescriptions
+    }
+
     internal fun validate() {
-        val modelDescriptions = retrieveModelDescriptions()
 
         ssd.system.elements.component.forEach { component ->
 

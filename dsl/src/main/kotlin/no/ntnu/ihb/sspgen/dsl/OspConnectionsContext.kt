@@ -5,17 +5,28 @@ import no.ntnu.ihb.sspgen.osp.VariableType
 import no.ntnu.ihb.sspgen.ssp.TSystem
 import javax.xml.bind.annotation.XmlElement
 
-data class VariableGroup(
-    val component: String,
+class VariableGroupIdentifier(
+    str: String
+) {
+
+    val component: String
     val groupName: String
-)
+
+    init {
+        str.extractElementAndConnectorNames().also {
+            component = it.first
+            groupName = it.second
+        }
+    }
+
+}
 
 class OspConnectionsContext(
     private val system: TSystem,
-    private val osp: OspModelDescriptionType
+    private val ospModelDescriptions: Map<String, OspModelDescriptionType>
 ) {
 
-    private fun VariableGroup.getOspVariableGroup(): Any {
+    private fun VariableGroupIdentifier.getOspVariableGroup(osp: OspModelDescriptionType): Any {
 
         val vgs = osp.variableGroups
         vgs.javaClass.declaredFields.forEach { f1 ->
@@ -59,10 +70,18 @@ class OspConnectionsContext(
         return refs
     }
 
-    infix fun VariableGroup.to(other: VariableGroup) {
+    infix fun String.to(other: String) {
 
-        val vg1 = this.getOspVariableGroup()
-        val vg2 = other.getOspVariableGroup()
+        val vgi1 = VariableGroupIdentifier(this)
+        val vgi2 = VariableGroupIdentifier(other)
+
+        val osp1 = ospModelDescriptions[vgi1.component]
+            ?: throw IllegalStateException("No OspModelDescription.xml available for component '$vgi1'")
+        val osp2 = ospModelDescriptions[vgi2.component]
+            ?: throw IllegalStateException("No OspModelDescription.xml available for component '$vgi2'")
+
+        val vg1 = vgi1.getOspVariableGroup(osp1)
+        val vg2 = vgi2.getOspVariableGroup(osp2)
 
         require(vg1.javaClass == vg2.javaClass) { "${vg1.javaClass} !=${vg2.javaClass}" }
 
@@ -85,9 +104,9 @@ class OspConnectionsContext(
                 val ref2 = v2[j].ref
 
                 TSystem.Connections.Connection().also { connection ->
-                    connection.startElement = this@to.component
+                    connection.startElement = vgi1.component
                     connection.startConnector = ref1
-                    connection.endElement = this@to.component
+                    connection.endElement = vgi1.component
                     connection.endConnector = ref2
                     system.connections.connection.add(connection)
                 }
