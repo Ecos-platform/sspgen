@@ -1,16 +1,20 @@
 package no.ntnu.ihb.sspgen.dsl
 
-import no.ntnu.ihb.sspgen.schema.TConnectors
-import no.ntnu.ihb.sspgen.schema.TParameter
+import no.ntnu.ihb.sspgen.ssp.TComponent
+import no.ntnu.ihb.sspgen.ssp.TConnectors
+import no.ntnu.ihb.sspgen.ssp.TParameter
 
 internal fun String.extractElementAndConnectorNames(): Pair<String, String> {
     val i = indexOf('.')
-    if (i == -1) throw IllegalArgumentException()
+    if (i == -1) throw IllegalArgumentException("Invalid argument: $this")
     val elementName = substring(0, i)
     val connectorName = substring(i + 1)
     return elementName to connectorName
 }
 
+internal fun TComponent.getSourceFileName(): String {
+    return source.replace("resources/", "")
+}
 
 internal fun TParameter.copy(): TParameter {
     fun TParameter.Integer.copy() = TParameter.Integer().also { p ->

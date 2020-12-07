@@ -2,13 +2,13 @@ package no.ntnu.ihb.sspgen.dsl
 
 import no.ntnu.ihb.fmi4j.modeldescription.ModelDescription
 import no.ntnu.ihb.fmi4j.modeldescription.ModelDescriptionParser
-import no.ntnu.ihb.sspgen.schema.SystemStructureDescription
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.FileOutputStream
+import no.ntnu.ihb.fmi4j.modeldescription.util.FmiModelDescriptionUtil
+import no.ntnu.ihb.sspgen.osp.OspModelDescriptionType
+import no.ntnu.ihb.sspgen.ssp.SystemStructureDescription
+import java.io.*
 import java.net.URL
 import java.util.zip.ZipEntry
+import java.util.zip.ZipInputStream
 import java.util.zip.ZipOutputStream
 import javax.xml.bind.JAXB
 
@@ -21,15 +21,25 @@ class SspContext(
     private val archiveName: String
 ) {
 
+    var validate = true
+
     private val ssd: SystemStructureDescription = SystemStructureDescription()
     private val resources = mutableListOf<Resource>()
     private val namespaces = mutableListOf<String>()
+
+    internal val modelDescriptions by lazy {
+        retrieveModelDescriptions()
+    }
+
+    internal val ospModelDescriptions by lazy {
+        retrieveOspModelDescriptions()
+    }
 
     fun ssd(name: String, ctx: SsdContext.() -> Unit) {
         ssd.name = name
         ssd.version = "1.0"
         ssd.generationTool = "sspgen"
-        SsdContext(ssd).apply(ctx)
+        SsdContext(ssd, modelDescriptions, ospModelDescriptions).apply(ctx)
     }
 
     fun namespaces(ctx: NamespaceContext.() -> Unit) {
@@ -98,24 +108,56 @@ class SspContext(
     }
 
     private fun retrieveModelDescriptions(): Map<String, ModelDescription> {
+
+        if (validate && resources.isEmpty()) {
+            throw IllegalStateException("No resources has been defined. Resources must be defined prior to ssd!")
+        }
+
         val modelDescriptions = mutableMapOf<String, ModelDescription>()
         resources.forEach { resource ->
             if (resource.name.endsWith(".fmu")) {
-                val md = ByteArrayInputStream(resource.readBytes()).use {
-                    ModelDescriptionParser.parse(it)
-                }
+                val xml = FmiModelDescriptionUtil.extractModelDescriptionXml(resource.openStream())
+                val md = ModelDescriptionParser.parse(xml)
                 modelDescriptions[resource.name] = md
             }
         }
         return modelDescriptions
     }
 
+    private fun extractOspModelDescription(`is`: InputStream): OspModelDescriptionType? {
+        ZipInputStream(`is`.buffered()).use { zis ->
+            var zipEntry: ZipEntry? = zis.nextEntry
+            while (zipEntry != null) {
+                if (zipEntry.name.endsWith("OspModelDescription.xml")) {
+                    val xml = InputStreamReader(zis).buffered().useLines {
+                        it.joinToString("\n")
+                    }
+                    return JAXB.unmarshal(StringReader(xml), OspModelDescriptionType::class.java)
+                }
+                zis.closeEntry()
+                zipEntry = zis.nextEntry
+            }
+        }
+        return null
+    }
+
+    private fun retrieveOspModelDescriptions(): Map<String, OspModelDescriptionType> {
+        val ospModelDescriptions = mutableMapOf<String, OspModelDescriptionType>()
+        resources.forEach { resource ->
+            if (resource.name.endsWith(".fmu")) {
+                extractOspModelDescription(resource.openStream())?.also { ospMd ->
+                    ospModelDescriptions[resource.name] = ospMd
+                }
+            }
+        }
+        return ospModelDescriptions
+    }
+
     internal fun validate() {
-        val modelDescriptions = retrieveModelDescriptions()
 
         ssd.system.elements.component.forEach { component ->
 
-            val fmuName = component.source.replace(SOURCE_PREFIX, "")
+            val fmuName = component.getSourceFileName()
             val md = modelDescriptions[fmuName]
                 ?: throw IllegalStateException("No modelDescription affiliated with $fmuName!")
 
@@ -140,6 +182,8 @@ class SspContext(
     }
 
     fun build(outputDir: File? = null) {
+
+        if (validate) validate()
 
         val fileName = if (archiveName.endsWith(".ssp")) {
             archiveName
@@ -174,8 +218,8 @@ class SspContext(
 
     }
 
-    private companion object {
-        private const val SOURCE_PREFIX = "resources/"
+    internal companion object {
+        const val SOURCE_PREFIX = "resources/"
     }
 
 }

@@ -1,10 +1,14 @@
 package no.ntnu.ihb.sspgen.dsl
 
-import no.ntnu.ihb.sspgen.schema.*
+import no.ntnu.ihb.fmi4j.modeldescription.ModelDescription
+import no.ntnu.ihb.sspgen.osp.OspModelDescriptionType
+import no.ntnu.ihb.sspgen.ssp.*
 
 @Scoped
 class SsdContext(
-    private val ssd: SystemStructureDescription
+    private val ssd: SystemStructureDescription,
+    private val modelDescriptions: Map<String, ModelDescription>,
+    private val ospModelDescriptions: Map<String, OspModelDescriptionType>
 ) {
 
     var author: String?
@@ -39,7 +43,7 @@ class SsdContext(
 
     fun system(name: String, ctx: SystemContext.() -> Unit) {
         ssd.system = TSystem().apply { this.name = name }
-        SystemContext(ssd.system).apply(ctx)
+        SystemContext(ssd.system, modelDescriptions, ospModelDescriptions).apply(ctx)
     }
 
     fun defaultExperiment(
@@ -58,13 +62,16 @@ class SsdContext(
 
     @Scoped
     class SystemContext(
-        private val system: TSystem
+        private val system: TSystem,
+        private val modelDescriptions: Map<String, ModelDescription>,
+        private val ospModelDescriptions: Map<String, OspModelDescriptionType>
     ) {
 
         var description: String? = system.description
 
         init {
             system.connectors = TConnectors()
+            system.connections = TSystem.Connections()
         }
 
         fun elements(ctx: ElementsContext.() -> Unit) {
@@ -73,8 +80,11 @@ class SsdContext(
         }
 
         fun connections(inputsFirst: Boolean = false, ctx: ConnectionsContext.() -> Unit) {
-            system.connections = TSystem.Connections()
             ConnectionsContext(inputsFirst, system).apply(ctx)
+        }
+
+        fun ospConnections(ctx: OspConnectionsContext.() -> Unit) {
+            OspConnectionsContext(system, modelDescriptions, ospModelDescriptions).apply(ctx)
         }
 
         fun annotations(ctx: AnnotationsContext.() -> Unit) {

@@ -10,7 +10,9 @@ internal class NamespaceTest {
 
         val xml = ssp("") {
 
-            ssd("") {}
+            validate = false
+
+            ssd("dummySsd") {}
 
             namespaces {
                 namespace("osp", "http://opensimulationplatform.com/SSP/OSPAnnotations")

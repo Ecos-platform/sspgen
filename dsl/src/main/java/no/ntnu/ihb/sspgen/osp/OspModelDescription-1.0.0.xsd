@@ -1,0 +1,1145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2020 rel. 2 (x64) (http://www.altova.com) by Martin Rindarøy (SINTEF Ocean) -->
+<!--
+  ~ This Source Code Form is subject to the terms of the Mozilla Public
+  ~ License, v. 2.0. If a copy of the MPL was not distributed with this
+  ~ file, You can obtain one at https://mozilla.org/MPL/2.0/.
+  -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:osp="https://open-simulation-platform.com/OspModelDescription/1.0.0"
+           targetNamespace="https://open-simulation-platform.com/OspModelDescription/1.0.0"
+           elementFormDefault="qualified" version="1.0">
+    <xs:include schemaLocation="fmi2Unit.xsd"/>
+    <xs:element name="OspModelDescription" type="osp:OspModelDescriptionType"/>
+    <xs:complexType name="UnitType">
+        <xs:annotation>
+            <xs:documentation>Using same method to define units as in fmi2Unit.xsd, but have extended it with one more
+                BaseUnit: percent.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="osp:fmi2Unit"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="UnitDefinitionsType">
+        <xs:annotation>
+            <xs:documentation>This element contains a list of Unit elements which is defined according to fmi2Unit.xsd.
+                Variables in variable groups can refer to units defined here, or to units defined in the fmi
+                modelDescription.xml, if it is version FMI 2.0 or greater.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="Unit" type="osp:UnitType"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="VariableType">
+        <xs:annotation>
+            <xs:documentation>This element is contained inside variable group elements, and they refer to variables
+                defined in fmi modelDescription.xml and units defined either in fmi modelDescription.xml or in the
+                UnitDefinitions element. If a unit is defined with the same name in both fmi modelDescription.xml and
+                UnitDefinitions the latter overrides the former.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:attribute name="ref" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Name of variable in fmi modelDescription.xml. Must match exactly</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="unit" use="optional">
+            <xs:annotation>
+                <xs:documentation>Name of UnitType defined either in this document under UnitDefinitions or in the fmi
+                    modelDescription.xml if it is of FMI version 2.0 or greater
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="ForceType">
+        <xs:annotation>
+            <xs:documentation>Variables grouped under this element is defined to represent a force. The xml schema
+                validates the number of contained Variable elements, and the OSP-IS validator checks that the
+                causalities are correct.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Variable" type="osp:VariableType" maxOccurs="3"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Arbitrary name which is used for referring to this variable group in connections.
+                    Variable group names must be unique for a given OspModelDescription.xml
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="TorqueType">
+        <xs:annotation>
+            <xs:documentation>Variables grouped under this element is defined to represent a torque. The xml schema
+                validates the number of contained Variable elements, and the OSP-IS validator checks that the
+                causalities are correct.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Variable" type="osp:VariableType" maxOccurs="3"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Arbitrary name which is used for referring to this variable group in connections.
+                    Variable group names must be unique for a given OspModelDescription.xml
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="VoltageType">
+        <xs:annotation>
+            <xs:documentation>Variables grouped under this element is defined to represent a voltage. The xml schema
+                validates the number of contained Variable elements, and the OSP-IS validator checks that the
+                causalities are correct.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Variable" type="osp:VariableType" maxOccurs="3"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Arbitrary name which is used for referring to this variable group in connections.
+                    Variable group names must be unique for a given OspModelDescription.xml
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="PressureType">
+        <xs:annotation>
+            <xs:documentation>Variables grouped under this element is defined to represent a pressure. The xml schema
+                validates the number of contained Variable elements, and the OSP-IS validator checks that the
+                causalities are correct.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Variable" type="osp:VariableType" maxOccurs="3"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Arbitrary name which is used for referring to this variable group in connections.
+                    Variable group names must be unique for a given OspModelDescription.xml
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="LinearVelocityType">
+        <xs:annotation>
+            <xs:documentation>Variables grouped under this element is defined to represent a linear velocity. The xml
+                schema validates the number of contained Variable elements, and the OSP-IS validator checks that the
+                causalities are correct.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Variable" type="osp:VariableType" maxOccurs="3"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Arbitrary name which is used for referring to this variable group in connections.
+                    Variable group names must be unique for a given OspModelDescription.xml
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="AngularVelocityType">
+        <xs:annotation>
+            <xs:documentation>Variables grouped under this element is defined to represent a angular velocity. The xml
+                schema validates the number of contained Variable elements, and the OSP-IS validator checks that the
+                causalities are correct.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Variable" type="osp:VariableType" maxOccurs="3"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Arbitrary name which is used for referring to this variable group in connections.
+                    Variable group names must be unique for a given OspModelDescription.xml
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="CurrentType">
+        <xs:annotation>
+            <xs:documentation>Variables grouped under this element is defined to represent an electrical current. The
+                xml schema validates the number of contained Variable elements, and the OSP-IS validator checks that the
+                causalities are correct.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Variable" type="osp:VariableType" maxOccurs="3"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Arbitrary name which is used for referring to this variable group in connections.
+                    Variable group names must be unique for a given OspModelDescription.xml
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="VolumeFlowRateType">
+        <xs:annotation>
+            <xs:documentation>Variables grouped under this element is defined to represent a volume flow rate. The xml
+                schema validates the number of contained Variable elements, and the OSP-IS validator checks that the
+                causalities are correct.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Variable" type="osp:VariableType" maxOccurs="3"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Arbitrary name which is used for referring to this variable group in connections.
+                    Variable group names must be unique for a given OspModelDescription.xml
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="LinearDisplacementType">
+        <xs:annotation>
+            <xs:documentation>Variables grouped under this element is defined to represent a linear displacement. The
+                xml schema validates the number of contained Variable elements, and the OSP-IS validator checks that the
+                causalities are correct.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Variable" type="osp:VariableType" maxOccurs="3"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Arbitrary name which is used for referring to this variable group in connections.
+                    Variable group names must be unique for a given OspModelDescription.xml
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="AngularDisplacementType">
+        <xs:annotation>
+            <xs:documentation>Variables grouped under this element is defined to represent a angular displacement. The
+                xml schema validates the number of contained Variable elements, and the OSP-IS validator checks that the
+                causalities are correct.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Variable" type="osp:VariableType" maxOccurs="3"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Arbitrary name which is used for referring to this variable group in connections.
+                    Variable group names must be unique for a given OspModelDescription.xml
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="ChargeType">
+        <xs:annotation>
+            <xs:documentation>Variables grouped under this element is defined to represent an electric charge. The xml
+                schema validates the number of contained Variable elements, and the OSP-IS validator checks that the
+                causalities are correct.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Variable" type="osp:VariableType" maxOccurs="3"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Arbitrary name which is used for referring to this variable group in connections.
+                    Variable group names must be unique for a given OspModelDescription.xml
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="VolumeType">
+        <xs:annotation>
+            <xs:documentation>Variables grouped under this element is defined to represent a volume. The xml schema
+                validates the number of contained Variable elements, and the OSP-IS validator checks that the
+                causalities are correct.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Variable" type="osp:VariableType" maxOccurs="3"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Arbitrary name which is used for referring to this variable group in connections.
+                    Variable group names must be unique for a given OspModelDescription.xml
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="LinearAccelerationType">
+        <xs:annotation>
+            <xs:documentation>Variables grouped under this element is defined to represent a linear acceleration. The
+                xml schema validates the number of contained Variable elements, and the OSP-IS validator checks that the
+                causalities are correct.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Variable" type="osp:VariableType" maxOccurs="3"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Arbitrary name which is used for referring to this variable group in connections.
+                    Variable group names must be unique for a given OspModelDescription.xml
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="AngularAccelerationType">
+        <xs:annotation>
+            <xs:documentation>Variables grouped under this element is defined to represent an angular acceleration. The
+                xml schema validates the number of contained Variable elements, and the OSP-IS validator checks that the
+                causalities are correct.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Variable" type="osp:VariableType" maxOccurs="3"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Arbitrary name which is used for referring to this variable group in connections.
+                    Variable group names must be unique for a given OspModelDescription.xml
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="LinearMechanicalPortType">
+        <xs:annotation>
+            <xs:documentation>This group must contain exactly 1 Force and exactly 1 LinearVelocity, where the
+                causalities of the two groups must be opposite of each other. The xml schema validates that the element
+                contains the correct child elements, and the OSP-IS validator verifies the causalities.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Force" type="osp:ForceType"/>
+            <xs:element name="LinearVelocity" type="osp:LinearVelocityType"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Arbitrary name which is used for referring to this variable group in connections.
+                    Variable group names must be unique for a given OspModelDescription.xml
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="AngularMechanicalPortType">
+        <xs:annotation>
+            <xs:documentation>This group must contain exactly 1 Torque and exactly 1 AngularVelocity, where the
+                causalities of the two groups must be opposite of each other. The xml schema validates that the element
+                contains the correct child elements, and the OSP-IS validator verifies the causalities.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Torque" type="osp:TorqueType"/>
+            <xs:element name="AngularVelocity" type="osp:AngularVelocityType"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Arbitrary name which is used for referring to this variable group in connections.
+                    Variable group names must be unique for a given OspModelDescription.xml
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="ElectromagneticPortType">
+        <xs:annotation>
+            <xs:documentation>This group must contain exactly 1 Voltage and exactly 1 Current, where the causalities of
+                the two groups must be opposite of each other. The xml schema validates that the element contains the
+                correct child elements, and the OSP-IS validator verifies the causalities.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Voltage" type="osp:VoltageType"/>
+            <xs:element name="Current" type="osp:CurrentType"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Arbitrary name which is used for referring to this variable group in connections.
+                    Variable group names must be unique for a given OspModelDescription.xml
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="HydraulicPortType">
+        <xs:annotation>
+            <xs:documentation>This group must contain exactly 1 Pressure and exactly 1 VolumeFlowRate, where the
+                causalities of the two groups must be opposite of each other. The xml schema validates that the element
+                contains the correct child elements, and the OSP-IS validator verifies the causalities.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Pressure" type="osp:PressureType"/>
+            <xs:element name="VolumeFlowRate" type="osp:VolumeFlowRateType"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Arbitrary name which is used for referring to this variable group in connections.
+                    Variable group names must be unique for a given OspModelDescription.xml
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="LinearMechanicalQuasiPortType">
+        <xs:annotation>
+            <xs:documentation>This group must contain exactly 1 Force and exactly 1 LinearDisplacement, where the
+                causalities of the two groups must be opposite of each other. The xml schema validates that the element
+                contains the correct child elements, and the OSP-IS validator verifies the causalities.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Force" type="osp:ForceType"/>
+            <xs:element name="LinearDisplacement" type="osp:LinearDisplacementType"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Arbitrary name which is used for referring to this variable group in connections.
+                    Variable group names must be unique for a given OspModelDescription.xml
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="AngularMechanicalQuasiPortType">
+        <xs:annotation>
+            <xs:documentation>This group must contain exactly 1 Torque and exactly 1 AngularDisplacement, where the
+                causalities of the two groups must be opposite of each other. The xml schema validates that the element
+                contains the correct child elements, and the OSP-IS validator verifies the causalities.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Torque" type="osp:TorqueType"/>
+            <xs:element name="AngularDisplacement" type="osp:AngularDisplacementType"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+    </xs:complexType>
+    <xs:complexType name="ElectromagneticQuasiPortType">
+        <xs:annotation>
+            <xs:documentation>This group must contain exactly 1 Voltage and exactly 1 Charge, where the causalities of
+                the two groups must be opposite of each other. The xml schema validates that the element contains the
+                correct child elements, and the OSP-IS validator verifies the causalities.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Voltage" type="osp:VoltageType"/>
+            <xs:element name="Charge" type="osp:ChargeType"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Arbitrary name which is used for referring to this variable group in connections.
+                    Variable group names must be unique for a given OspModelDescription.xml
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="HydraulicQuasiPortType">
+        <xs:annotation>
+            <xs:documentation>This group must contain exactly 1 Pressure and exactly 1 Volume, where the causalities of
+                the two groups must be opposite of each other. The xml schema validates that the element contains the
+                correct child elements, and the OSP-IS validator verifies the causalities.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Pressure" type="osp:PressureType"/>
+            <xs:element name="Volume" type="osp:VolumeType"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Arbitrary name which is used for referring to this variable group in connections.
+                    Variable group names must be unique for a given OspModelDescription.xml
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="ElectricPowerType">
+        <xs:annotation>
+            <xs:documentation>This group contains exactly 1 variable representing an electrical power.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Variable" type="osp:VariableType"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Arbitrary name which is used for referring to this variable group in connections.
+                    Variable group names must be unique for a given OspModelDescription.xml
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="FrequencyType">
+        <xs:annotation>
+            <xs:documentation>This group contains exactly 1 variable representing a frequency.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Variable" type="osp:VariableType"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Arbitrary name which is used for referring to this variable group in connections.
+                    Variable group names must be unique for a given OspModelDescription.xml
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="NmeaTimeType">
+        <xs:annotation>
+            <xs:documentation>This group contains exactly 1 variable which is defined to represent a UTC time.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Variable" type="osp:VariableType"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Arbitrary name which is used for referring to this variable group in connections.
+                    Variable group names must be unique for a given OspModelDescription.xml
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="NmeaStatusType">
+        <xs:annotation>
+            <xs:documentation>This group contains exactly 1 variable representing NMEA status information used in
+                several NMEA messages.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Variable" type="osp:VariableType"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Arbitrary name which is used for referring to this variable group in connections.
+                    Variable group names must be unique for a given OspModelDescription.xml
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="NmeaGgaLatitudeLongitudeType">
+        <xs:annotation>
+            <xs:documentation>This group contains exactly 4 variables which describes latitude and longitude as part of
+                an NMEA GGA message. The contained variables represent the following
+                1. Latitude
+                2. Latitude direction ("N" or "S")
+                3. Longitude
+                4. Longitude direction ("E" or "W")
+                The variables must all have the same causality and appear in the order specified above.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Variable" type="osp:VariableType" minOccurs="4" maxOccurs="4"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Arbitrary name which is used for referring to this variable group in connections.
+                    Variable group names must be unique for a given OspModelDescription.xml
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="NmeaGgaFixType">
+        <xs:annotation>
+            <xs:documentation>This group contains exactly 7 variables which describes NMEA GPS fix information. The
+                contained variables represent the following
+                1.Quality
+                2. Number of satellites
+                3. Horizontal dilution
+                4. Antenna altitude
+                5. Geoidal separation
+                6. GPS age
+                7. Station ID
+                The variables must all have the same causality and appear in the order specified above.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Variable" type="osp:VariableType" minOccurs="7" maxOccurs="7"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Arbitrary name which is used for referring to this variable group in connections.
+                    Variable group names must be unique for a given OspModelDescription.xml
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="NmeaGgaType">
+        <xs:annotation>
+            <xs:documentation>This group represents an NMEA GGA message, and contains exactly 1 NmeaTime, exactly 1
+                NmeaGgaLatitudeLongitude, and exactly 1 NmeaGgaFix.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="NmeaTime" type="osp:NmeaTimeType"/>
+            <xs:element name="NmeaGgaLatitudeLongitude" type="osp:NmeaGgaLatitudeLongitudeType"/>
+            <xs:element name="NmeaGgaFix" type="osp:NmeaGgaFixType"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Arbitrary name which is used for referring to this variable group in connections.
+                    Variable group names must be unique for a given OspModelDescription.xml
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="NmeaGstRmsType">
+        <xs:annotation>
+            <xs:documentation>This group contains exactly 1 variable which represents the RMS value of the pseudo-range
+                residuals for an NMEA GST message
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Variable" type="osp:VariableType"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Arbitrary name which is used for referring to this variable group in connections.
+                    Variable group names must be unique for a given OspModelDescription.xml
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="NmeaGstEllipseType">
+        <xs:annotation>
+            <xs:documentation>This group contains exactly 3 variables representing the error ellipse data of an NMEA GST
+                message. The contained variables represent the following:
+                1. Sigma major axis
+                2. Sigma minor axis
+                3. Ellipse orientation (degrees from true north)
+                The variables must all have the same causality and appear in the order specified above.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Variable" type="osp:VariableType" minOccurs="3" maxOccurs="3"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Arbitrary name which is used for referring to this variable group in connections.
+                    Variable group names must be unique for a given OspModelDescription.xml
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="NmeaGstPositionErrorType">
+        <xs:annotation>
+            <xs:documentation>This group contains exactly 3 variables representing the sigma errors for latitude,
+                longitude and altitude of an NMEA GST message. The contained variables represent the following:
+                1. Sigma longitude (in meters)
+                2. Sigma latitude (in meters)
+                3. Sigma altitude (in meters)
+                The variables must all have the same causality and appear in the order specified above.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Variable" type="osp:VariableType" minOccurs="3" maxOccurs="3"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Arbitrary name which is used for referring to this variable group in connections.
+                    Variable group names must be unique for a given OspModelDescription.xml
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="NmeaGstType">
+        <xs:annotation>
+            <xs:documentation>This group represents an NMEA GST message, and contains exactly 1 NmeaGstRms, exactly 1
+                NmeaGstEllipse and exactly 1 NmeaGstPositionError.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="NmeaGstRms" type="osp:NmeaGstRmsType"/>
+            <xs:element name="NmeaGstEllipse" type="osp:NmeaGstEllipseType"/>
+            <xs:element name="NmeaGstPositionError" type="osp:NmeaGstPositionErrorType"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Arbitrary name which is used for referring to this variable group in connections.
+                    Variable group names must be unique for a given OspModelDescription.xml
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="NmeaWindDirectionType">
+        <xs:annotation>
+            <xs:documentation>This group contains exactly 2 variables which represent the wind direction part for an
+                NMEA MWV message. The contained variables specify the following:
+                1. Wind angle in degrees (0 to 359 degrees)
+                2. Wind direction reference ("R" for "relative" or "T" or "true")
+                The variables must all have the same causality and appear in the order specified above.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Variable" type="osp:VariableType" minOccurs="2" maxOccurs="2"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Arbitrary name which is used for referring to this variable group in connections.
+                    Variable group names must be unique for a given OspModelDescription.xml
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="NmeaWindSpeedType">
+        <xs:annotation>
+            <xs:documentation>This group contains exactly 2 variables which represents the wind speed part for an NMEA
+                MWV message. The contained variables specify the following:
+                1. Wind speed
+                2. Wind speed units (for example, "K" or "M")
+                The variables must all have the same causality and appear in the order specified above.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Variable" type="osp:VariableType" minOccurs="2" maxOccurs="2"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Arbitrary name which is used for referring to this variable group in connections.
+                    Variable group names must be unique for a given OspModelDescription.xml
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="NmeaMwvType">
+        <xs:annotation>
+            <xs:documentation>This group represents an NMEA MWV message, and contains exactly 1 NmeaWindDirection,
+                exactly 1 NmeaWindSpeed, and exactly 1 NmeaStatus.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="NmeaWindDirection" type="osp:NmeaWindDirectionType"/>
+            <xs:element name="NmeaWindSpeed" type="osp:NmeaWindSpeedType"/>
+            <xs:element name="NmeaStatus" type="osp:NmeaStatusType"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Arbitrary name which is used for referring to this variable group in connections.
+                    Variable group names must be unique for a given OspModelDescription.xml
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="NmeaTrueHeadingType">
+        <xs:annotation>
+            <xs:documentation>This group contains exactly 1 variable which represents heading in degrees (true North)
+                for an NMEA THS message
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Variable" type="osp:VariableType"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Arbitrary name which is used for referring to this variable group in connections.
+                    Variable group names must be unique for a given OspModelDescription.xml
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="NmeaThsType">
+        <xs:annotation>
+            <xs:documentation>This group represents an NMEA THS message and contains exactly 1 NmeaTrueHeading and
+                exactly 1 NmeaStatus.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="NmeaTrueHeading" type="osp:NmeaTrueHeadingType"/>
+            <xs:element name="NmeaStatus" type="osp:NmeaStatusType"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Arbitrary name which is used for referring to this variable group in connections.
+                    Variable group names must be unique for a given OspModelDescription.xml
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="NmeaSxnType">
+        <xs:annotation>
+            <xs:documentation>This group represents a proprietary Kongsberg Seatex NMEA SXN message and contains exactly
+                1 AngularDisplacement and exactly 1 NmeaStatus.
+                AngularDisplacement must contain exactly 2 variables where the first one represents roll and the second
+                represents pitch with radians ([rad]) as units.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="AngularDisplacement" type="osp:AngularDisplacementType"/>
+            <xs:element name="NmeaStatus" type="osp:NmeaStatusType"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Arbitrary name which is used for referring to this variable group in connections.
+                    Variable group names must be unique for a given OspModelDescription.xml
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="BatteryFeedbackType">
+        <xs:annotation>
+            <xs:documentation>This group represents feedback sent from a battery and contains exactly 1 ElectricPower
+                (representing the power delivered presently) and exactly 1 variable describing the battery
+                state-of-charge (SOC).
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="ElectricPower" type="osp:ElectricPowerType"/>
+            <xs:element name="Variable" type="osp:VariableType"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Arbitrary name which is used for referring to this variable group in connections.
+                    Variable group names must be unique for a given OspModelDescription.xml
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="GeneratorFeedbackType">
+        <xs:annotation>
+            <xs:documentation>This group represents feedback sent from a generator and contains exactly 1 ElectricPower
+                (representing the power delivered presently), exactly 1 Voltage, and exactly 1 Frequency.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="ElectricPower" type="osp:ElectricPowerType"/>
+            <xs:element name="Voltage" type="osp:VoltageType"/>
+            <xs:element name="Frequency" type="osp:FrequencyType"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Arbitrary name which is used for referring to this variable group in connections.
+                    Variable group names must be unique for a given OspModelDescription.xml
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="BusFeedbackType">
+        <xs:annotation>
+            <xs:documentation>This group represents feedback sent from a bus and contains exactly 1 ElectricPower
+                (representing the power available on the bus presently), exactly 1 Voltage, and exactly 1 Frequency.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="ElectricPower" type="osp:ElectricPowerType"/>
+            <xs:element name="Voltage" type="osp:VoltageType"/>
+            <xs:element name="Frequency" type="osp:FrequencyType"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Arbitrary name which is used for referring to this variable group in connections.
+                    Variable group names must be unique for a given OspModelDescription.xml
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="ShaftSpeedType">
+        <xs:annotation>
+            <xs:documentation>Variable group of type AngularVelocity with exactly 1 Variable, which is meant to
+                represent the angular velocity of a rotating shaft.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:restriction base="osp:AngularVelocityType">
+                <xs:sequence>
+                    <xs:element name="Variable" type="osp:VariableType"/>
+                </xs:sequence>
+            </xs:restriction>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="AzimuthAngleType">
+        <xs:annotation>
+            <xs:documentation>Variable group of type AngularDisplacement with exactly 1 Variable, which is meant to
+                represent the angle of a azimuth thruster.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:restriction base="osp:AngularDisplacementType">
+                <xs:sequence>
+                    <xs:element name="Variable" type="osp:VariableType"/>
+                </xs:sequence>
+            </xs:restriction>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="BladePitchType">
+        <xs:annotation>
+            <xs:documentation>Variable group of type AngularDisplacement with exactly 1 Variable, which is meant to
+                represent the blade pitch of propeller blades.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:restriction base="osp:AngularDisplacementType">
+                <xs:sequence>
+                    <xs:element name="Variable" type="osp:VariableType"/>
+                </xs:sequence>
+            </xs:restriction>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="FixedThrusterSetpointType">
+        <xs:annotation>
+            <xs:documentation>This group represents setpoints used for communications between fixed thruster controllers
+                and fixed thrusters and can contain 1 ShaftSpeed describing the desired rotational velocity of the
+                propeller shaft. It can also contain 1 BladePitch which represents the propeller blade pitch.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="ShaftSpeed" type="osp:ShaftSpeedType" minOccurs="0"/>
+            <xs:element name="BladePitch" type="osp:BladePitchType" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Arbitrary name which is used for referring to this variable group in connections.
+                    Variable group names must be unique for a given OspModelDescription.xml
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="FixedThrusterFeedbackType">
+        <xs:annotation>
+            <xs:documentation>This group represents feedbacks used for communications between fixed thruster controllers
+                and fixed thrusters and can contain 1 ShaftSpeed describing the actual shaft speed of the propeller and
+                exactly 1 Force representing the generated force(s). It can also contain 1 BladePitch describing the
+                actual pitch of the propeller blades.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="ShaftSpeed" type="osp:ShaftSpeedType" minOccurs="0"/>
+            <xs:element name="BladePitch" type="osp:BladePitchType" minOccurs="0"/>
+            <xs:element name="Force" type="osp:ForceType"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Arbitrary name which is used for referring to this variable group in connections.
+                    Variable group names must be unique for a given OspModelDescription.xml
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="AzimuthThrusterSetpointType">
+        <xs:annotation>
+            <xs:documentation>This group represents setpoints or feedbacks used for communications between azimuth
+                thruster controllers and azimuth thrusters and can contain 1 ShaftSpeed describing the desired
+                rotational velocity of the propeller shaft and exactly 1 AzimuthAngle describing the desired or actual
+                azimuth angle of the thruster. It can also contain 1 BladePitch describing the desired propeller blade
+                pitch.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="ShaftSpeed" type="osp:ShaftSpeedType" minOccurs="0"/>
+            <xs:element name="AzimuthAngle" type="osp:AzimuthAngleType" minOccurs="0"/>
+            <xs:element name="BladePitch" type="osp:BladePitchType" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Arbitrary name which is used for referring to this variable group in connections.
+                    Variable group names must be unique for a given OspModelDescription.xml
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="AzimuthThrusterFeedbackType">
+        <xs:annotation>
+            <xs:documentation>This group represents feedbacks used for communications between azimuth thruster
+                controllers and azimuth thrusters. It contains a ShaftSpeed variable group representing the actual shaft
+                speed of the thruster; a AzimuthAngle variable group representing the actual azimuth angle; a BladePitch
+                variable group representing the actual propeller blade pitch; and a Force variable group representing
+                the actual thrust force. All variable groups are of dimension 1.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="ShaftSpeed" type="osp:ShaftSpeedType" minOccurs="0"/>
+            <xs:element name="AzimuthAngle" type="osp:AzimuthAngleType"/>
+            <xs:element name="BladePitch" type="osp:BladePitchType" minOccurs="0"/>
+            <xs:element name="Force" type="osp:ForceType"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Arbitrary name which is used for referring to this variable group in connections.
+                    Variable group names must be unique for a given OspModelDescription.xml
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="GenericType">
+        <xs:annotation>
+            <xs:documentation>This variable group has few restrictions on content. The intention with this group is to
+                enable users to create their own custom groups of variables, which does not have a defined type in
+                OSP-IS.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Variable" type="osp:VariableType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="Generic" type="osp:GenericType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="Force" type="osp:ForceType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="Torque" type="osp:TorqueType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="Voltage" type="osp:VoltageType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="Pressure" type="osp:PressureType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="LinearVelocity" type="osp:LinearVelocityType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="AngularVelocity" type="osp:AngularVelocityType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="Current" type="osp:CurrentType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="VolumeFlowRate" type="osp:VolumeFlowRateType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="LinearDisplacement" type="osp:LinearDisplacementType" minOccurs="0"
+                        maxOccurs="unbounded"/>
+            <xs:element name="AngularDisplacement" type="osp:AngularDisplacementType" minOccurs="0"
+                        maxOccurs="unbounded"/>
+            <xs:element name="Charge" type="osp:ChargeType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="Volume" type="osp:VolumeType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="LinearAcceleration" type="osp:LinearAccelerationType" minOccurs="0"
+                        maxOccurs="unbounded"/>
+            <xs:element name="AngularAcceleration" type="osp:AngularAccelerationType" minOccurs="0"
+                        maxOccurs="unbounded"/>
+            <xs:element name="LinearMechanicalPort" type="osp:LinearMechanicalPortType" minOccurs="0"
+                        maxOccurs="unbounded"/>
+            <xs:element name="AngularMechanicalPort" type="osp:AngularMechanicalPortType" minOccurs="0"
+                        maxOccurs="unbounded"/>
+            <xs:element name="ElectromagneticPort" type="osp:ElectromagneticPortType" minOccurs="0"
+                        maxOccurs="unbounded"/>
+            <xs:element name="HydraulicPort" type="osp:HydraulicPortType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="LinearMechanicalQuasiPort" type="osp:LinearMechanicalQuasiPortType" minOccurs="0"
+                        maxOccurs="unbounded"/>
+            <xs:element name="AngularMechanicalQuasiPort" type="osp:AngularMechanicalQuasiPortType" minOccurs="0"
+                        maxOccurs="unbounded"/>
+            <xs:element name="ElectromagneticQuasiPort" type="osp:ElectromagneticQuasiPortType" minOccurs="0"
+                        maxOccurs="unbounded"/>
+            <xs:element name="HydraulicQuasiPort" type="osp:HydraulicQuasiPortType" minOccurs="0"
+                        maxOccurs="unbounded"/>
+            <xs:element name="ElectricPower" type="osp:ElectricPowerType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="Frequency" type="osp:FrequencyType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="NmeaTime" type="osp:NmeaTimeType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="NmeaStatus" type="osp:NmeaStatusType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="NmeaGgaLatitudeLongitude" type="osp:NmeaGgaLatitudeLongitudeType" minOccurs="0"
+                        maxOccurs="unbounded"/>
+            <xs:element name="NmeaGgaFix" type="osp:NmeaGgaFixType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="NmeaGga" type="osp:NmeaGgaType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="NmeaGstRms" type="osp:NmeaGstRmsType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="NmeaGstEllipse" type="osp:NmeaGstEllipseType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="NmeaGstPositionError" type="osp:NmeaGstPositionErrorType" minOccurs="0"
+                        maxOccurs="unbounded"/>
+            <xs:element name="NmeaGst" type="osp:NmeaGstType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="NmeaWindDirection" type="osp:NmeaWindDirectionType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="NmeaWindSpeed" type="osp:NmeaWindSpeedType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="NmeaMwv" type="osp:NmeaMwvType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="NmeaTrueHeading" type="osp:NmeaTrueHeadingType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="NmeaThs" type="osp:NmeaThsType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="NmeaSxn" type="osp:NmeaSxnType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="BatteryFeedback" type="osp:BatteryFeedbackType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="GeneratorFeedback" type="osp:GeneratorFeedbackType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="BusFeedback" type="osp:BusFeedbackType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="ShaftSpeed" type="osp:ShaftSpeedType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="AzimuthAngle" type="osp:AzimuthAngleType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="BladePitch" type="osp:BladePitchType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="FixedThrusterSetpoint" type="osp:FixedThrusterSetpointType" minOccurs="0"
+                        maxOccurs="unbounded"/>
+            <xs:element name="FixedThrusterFeedback" type="osp:FixedThrusterFeedbackType" minOccurs="0"
+                        maxOccurs="unbounded"/>
+            <xs:element name="AzimuthThrusterSetpoint" type="osp:AzimuthThrusterSetpointType" minOccurs="0"
+                        maxOccurs="unbounded"/>
+            <xs:element name="AzimuthThrusterFeedback" type="osp:AzimuthThrusterFeedbackType" minOccurs="0"
+                        maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Arbitrary name which is used for referring to this variable group in connections.
+                    Variable group names must be unique for a given OspModelDescription.xml
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="VariableGroupsType">
+        <xs:annotation>
+            <xs:documentation>This element contains all the defined variable groups for the model</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Generic" type="osp:GenericType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="Force" type="osp:ForceType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="Torque" type="osp:TorqueType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="Voltage" type="osp:VoltageType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="Pressure" type="osp:PressureType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="LinearVelocity" type="osp:LinearVelocityType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="AngularVelocity" type="osp:AngularVelocityType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="Current" type="osp:CurrentType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="VolumeFlowRate" type="osp:VolumeFlowRateType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="LinearDisplacement" type="osp:LinearDisplacementType" minOccurs="0"
+                        maxOccurs="unbounded"/>
+            <xs:element name="AngularDisplacement" type="osp:AngularDisplacementType" minOccurs="0"
+                        maxOccurs="unbounded"/>
+            <xs:element name="Charge" type="osp:ChargeType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="Volume" type="osp:VolumeType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="LinearAcceleration" type="osp:LinearAccelerationType" minOccurs="0"
+                        maxOccurs="unbounded"/>
+            <xs:element name="AngularAcceleration" type="osp:AngularAccelerationType" minOccurs="0"
+                        maxOccurs="unbounded"/>
+            <xs:element name="LinearMechanicalPort" type="osp:LinearMechanicalPortType" minOccurs="0"
+                        maxOccurs="unbounded"/>
+            <xs:element name="AngularMechanicalPort" type="osp:AngularMechanicalPortType" minOccurs="0"
+                        maxOccurs="unbounded"/>
+            <xs:element name="ElectromagneticPort" type="osp:ElectromagneticPortType" minOccurs="0"
+                        maxOccurs="unbounded"/>
+            <xs:element name="HydraulicPort" type="osp:HydraulicPortType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="LinearMechanicalQuasiPort" type="osp:LinearMechanicalQuasiPortType" minOccurs="0"
+                        maxOccurs="unbounded"/>
+            <xs:element name="AngularMechanicalQuasiPort" type="osp:AngularMechanicalQuasiPortType" minOccurs="0"
+                        maxOccurs="unbounded"/>
+            <xs:element name="ElectromagneticQuasiPort" type="osp:ElectromagneticQuasiPortType" minOccurs="0"
+                        maxOccurs="unbounded"/>
+            <xs:element name="HydraulicQuasiPort" type="osp:HydraulicQuasiPortType" minOccurs="0"
+                        maxOccurs="unbounded"/>
+            <xs:element name="ElectricPower" type="osp:ElectricPowerType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="Frequency" type="osp:FrequencyType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="NmeaTime" type="osp:NmeaTimeType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="NmeaStatus" type="osp:NmeaStatusType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="NmeaGgaLatitudeLongitude" type="osp:NmeaGgaLatitudeLongitudeType" minOccurs="0"
+                        maxOccurs="unbounded"/>
+            <xs:element name="NmeaGgaFix" type="osp:NmeaGgaFixType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="NmeaGga" type="osp:NmeaGgaType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="NmeaGstRms" type="osp:NmeaGstRmsType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="NmeaGstEllipse" type="osp:NmeaGstEllipseType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="NmeaGstPositionError" type="osp:NmeaGstPositionErrorType" minOccurs="0"
+                        maxOccurs="unbounded"/>
+            <xs:element name="NmeaGst" type="osp:NmeaGstType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="NmeaWindDirection" type="osp:NmeaWindDirectionType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="NmeaWindSpeed" type="osp:NmeaWindSpeedType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="NmeaMwv" type="osp:NmeaMwvType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="NmeaTrueHeading" type="osp:NmeaTrueHeadingType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="NmeaThs" type="osp:NmeaThsType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="NmeaSxn" type="osp:NmeaSxnType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="BatteryFeedback" type="osp:BatteryFeedbackType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="GeneratorFeedback" type="osp:GeneratorFeedbackType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="BusFeedback" type="osp:BusFeedbackType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="ShaftSpeed" type="osp:ShaftSpeedType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="AzimuthAngle" type="osp:AzimuthAngleType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="BladePitch" type="osp:BladePitchType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="FixedThrusterSetpoint" type="osp:FixedThrusterSetpointType" minOccurs="0"
+                        maxOccurs="unbounded"/>
+            <xs:element name="FixedThrusterFeedback" type="osp:FixedThrusterFeedbackType" minOccurs="0"
+                        maxOccurs="unbounded"/>
+            <xs:element name="AzimuthThrusterSetpoint" type="osp:AzimuthThrusterSetpointType" minOccurs="0"
+                        maxOccurs="unbounded"/>
+            <xs:element name="AzimuthThrusterFeedback" type="osp:AzimuthThrusterFeedbackType" minOccurs="0"
+                        maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="OspModelDescriptionType">
+        <xs:annotation>
+            <xs:documentation>Root element of document</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="UnitDefinitions" type="osp:UnitDefinitionsType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>This element contains a list of Unit elements which is defined according to
+                        fmi2Unit.xsd. Variables in variable groups can refer to units defined here, or to units defined
+                        in the fmi modelDescription.xml, if it is version FMI 2.0 or greater.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="VariableGroups" type="osp:VariableGroupsType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>This element contains all the defined variable groups for the model
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="version" type="xs:string" use="required" fixed="1.0">
+            <xs:annotation>
+                <xs:documentation>OspModelDescription version</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+</xs:schema>

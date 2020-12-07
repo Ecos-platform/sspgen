@@ -6,6 +6,12 @@ import no.ntnu.ihb.sspgen.dsl.ssp
 
 ssp("TestSsdGen") {
 
+    resources {
+        file("path/to/FMU1.fmu")
+        file("path/to/FMU2.fmu")
+        url("example.com/someFile.txt")
+    }
+
     ssd("A simple CLI test") {
 
         author = "John Doe"
@@ -48,12 +54,6 @@ ssp("TestSsdGen") {
 
         defaultExperiment(startTime = 1.0)
 
-    }
-
-    resources {
-        file("path/to/FMU1.fmu")
-        file("path/to/FMU2.fmu")
-        url("example.com/someFile.txt")
     }
 
 }
