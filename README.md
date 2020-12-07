@@ -9,7 +9,7 @@ Resources bundled with the generated `.ssp` may be specified both as local files
 
 #### Pre-requisites
 
-Download the [kotlin-compiler](https://github.com/JetBrains/kotlin/releases/tag/v1.4.0) and add the bin folder to PATH. 
+Download the [kotlin-compiler](https://github.com/JetBrains/kotlin/releases/tag/v1.4.20) and add the bin folder to PATH.
 
 OR, simply run the script in the context of IntelliJ, which additionally adds script auto completion.
 
