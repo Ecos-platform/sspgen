@@ -264,7 +264,7 @@ And apply the plugin as usual:
 
 ```groovy
 plugins {
-    id 'no.ntnu.ihb.sspgen' version '0.2.0'
+    id 'no.ntnu.ihb.sspgen' version '0.4.0'
 }
 
 sspgen {
