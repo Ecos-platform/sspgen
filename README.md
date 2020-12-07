@@ -145,13 +145,20 @@ under `/resources` and a `SystemStructure.ssd` in the root directory with the co
 
 ```
 
-Another convenient feature of the DSL is the ability for copying connectors and parameterSets from one component to another.
+Another convenient feature of the DSL is the ability for copying connectors and parameterSets from one component to
+another. Additionally, [OSP-IS](https://opensimulationplatform.com/specification/) is supported, allowing high-level
+connections to be formed.
 
 
 #### API
 
 ```kotlin 
 ssp(archiveName: String) {
+
+    resources {
+        file(path: String)
+        url(path: String)
+    }
 
     ssd(name: String) {
 
@@ -206,7 +213,10 @@ ssp(archiveName: String) {
             }
             connections(inputsFirst: Boolean = false) {
                 "StartElement.StartConnector" to "EndElement.EndConnector" //inputsFirst=true swaps this
-            }        
+            }
+            ospConnections {
+                "component1.bond" to "component2.bond"
+            }      
         }
 
         defaultExperiment(startTime: Number, stopTime: Number) {       
@@ -228,11 +238,6 @@ ssp(archiveName: String) {
 
     namespaces {
         namespace(namespace: String, uri: String)
-    }
-
-    resources {
-        file(path: String)
-        url(path: String)
     }
 
 }
