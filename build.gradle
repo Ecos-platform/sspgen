@@ -31,8 +31,6 @@ subprojects { sub ->
         testImplementation("org.junit.jupiter:junit-jupiter-api:$junit_version")
         testImplementation("org.junit.jupiter:junit-jupiter-params:$junit_version")
         testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junit_version")
-
-        implementation 'no.ntnu.ihb.fmi4j:fmi-import:0.36.3'
     }
 
     test {
