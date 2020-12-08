@@ -207,7 +207,7 @@ class SspContext(
             if (resources.isNotEmpty()) {
                 zos.putNextEntry(ZipEntry(SOURCE_PREFIX))
                 resources.forEach {
-                    zos.putNextEntry(ZipEntry("SOURCE_PREFIX${it.name}"))
+                    zos.putNextEntry(ZipEntry("$SOURCE_PREFIX${it.name}"))
                     zos.write(it.readBytes())
                     zos.closeEntry()
                 }
@@ -218,7 +218,7 @@ class SspContext(
 
     }
 
-    internal companion object {
+    private companion object {
         const val SOURCE_PREFIX = "resources/"
     }
 
