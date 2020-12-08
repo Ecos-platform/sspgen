@@ -18,7 +18,7 @@ fun ssp(archiveName: String, ctx: SspContext.() -> Unit): SspContext {
 }
 
 class SspContext(
-    private val archiveName: String
+    val archiveName: String
 ) {
 
     var validate = true
