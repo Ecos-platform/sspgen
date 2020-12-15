@@ -65,6 +65,10 @@ class QuarterTruckOspTest {
 
             }
 
+            namespaces {
+
+            }
+
         }
 
     }

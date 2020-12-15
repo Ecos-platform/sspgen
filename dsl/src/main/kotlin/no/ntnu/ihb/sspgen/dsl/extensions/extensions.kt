@@ -1,4 +1,4 @@
-package no.ntnu.ihb.sspgen.dsl
+package no.ntnu.ihb.sspgen.dsl.extensions
 
 import no.ntnu.ihb.sspgen.ssp.TComponent
 import no.ntnu.ihb.sspgen.ssp.TConnectors

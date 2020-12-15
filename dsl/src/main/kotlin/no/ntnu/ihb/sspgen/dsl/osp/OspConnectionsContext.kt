@@ -2,28 +2,16 @@ package no.ntnu.ihb.sspgen.dsl
 
 import no.ntnu.ihb.fmi4j.modeldescription.ModelDescription
 import no.ntnu.ihb.fmi4j.modeldescription.variables.Causality
+import no.ntnu.ihb.sspgen.dsl.annotations.Scoped
+import no.ntnu.ihb.sspgen.dsl.extensions.extractElementAndConnectorNames
+import no.ntnu.ihb.sspgen.dsl.extensions.getSourceFileName
 import no.ntnu.ihb.sspgen.osp.OspModelDescriptionType
 import no.ntnu.ihb.sspgen.osp.VariableType
 import no.ntnu.ihb.sspgen.ssp.TComponent
 import no.ntnu.ihb.sspgen.ssp.TSystem
 import javax.xml.bind.annotation.XmlElement
 
-class VariableGroupIdentifier(
-    str: String
-) {
-
-    val componentName: String
-    val groupName: String
-
-    init {
-        str.extractElementAndConnectorNames().also {
-            componentName = it.first
-            groupName = it.second
-        }
-    }
-
-}
-
+@Scoped
 class OspConnectionsContext(
     private val system: TSystem,
     private val modelDescriptions: Map<String, ModelDescription>,

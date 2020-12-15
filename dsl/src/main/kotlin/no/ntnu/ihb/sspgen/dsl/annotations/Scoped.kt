@@ -1,4 +1,4 @@
-package no.ntnu.ihb.sspgen.dsl
+package no.ntnu.ihb.sspgen.dsl.annotations
 
 @DslMarker
 @Target(AnnotationTarget.CLASS, AnnotationTarget.TYPE)

@@ -3,6 +3,12 @@ package no.ntnu.ihb.sspgen.dsl
 import no.ntnu.ihb.fmi4j.modeldescription.ModelDescription
 import no.ntnu.ihb.fmi4j.modeldescription.ModelDescriptionParser
 import no.ntnu.ihb.fmi4j.modeldescription.util.FmiModelDescriptionUtil
+import no.ntnu.ihb.sspgen.dsl.annotations.Scoped
+import no.ntnu.ihb.sspgen.dsl.extensions.getSourceFileName
+import no.ntnu.ihb.sspgen.dsl.extensions.typeName
+import no.ntnu.ihb.sspgen.dsl.resources.FileResource
+import no.ntnu.ihb.sspgen.dsl.resources.Resource
+import no.ntnu.ihb.sspgen.dsl.resources.UrlResource
 import no.ntnu.ihb.sspgen.osp.OspModelDescriptionType
 import no.ntnu.ihb.sspgen.ssp.SystemStructureDescription
 import java.io.*
@@ -17,6 +23,7 @@ fun ssp(archiveName: String, ctx: SspContext.() -> Unit): SspContext {
     return SspContext(archiveName).apply(ctx)
 }
 
+@Scoped
 class SspContext(
     val archiveName: String
 ) {
@@ -36,6 +43,7 @@ class SspContext(
     }
 
     fun ssd(name: String, ctx: SsdContext.() -> Unit) {
+        check(!validate || resources.isNotEmpty()) { "The 'resources' block must be defined prior to 'ssd' block!" }
         ssd.name = name
         ssd.version = "1.0"
         ssd.generationTool = "sspgen"
@@ -43,14 +51,17 @@ class SspContext(
     }
 
     fun namespaces(ctx: NamespaceContext.() -> Unit) {
-        NamespaceContext().apply(ctx)
+        NamespaceContext(namespaces).apply(ctx)
     }
 
     fun resources(ctx: ResourcesContext.() -> Unit) {
-        ResourcesContext().apply(ctx)
+        ResourcesContext(resources).apply(ctx)
     }
 
-    inner class NamespaceContext {
+    @Scoped
+    inner class NamespaceContext(
+        private val namespaces: MutableList<String>
+    ) {
 
         fun namespace(namespace: String, uri: String) {
             namespaces.add("xmlns:$namespace=\"$uri\"")
@@ -58,7 +69,10 @@ class SspContext(
 
     }
 
-    inner class ResourcesContext {
+    @Scoped
+    inner class ResourcesContext(
+        private val resources: MutableList<Resource>
+    ) {
 
         fun file(filePath: String) {
             val file = File(filePath)
