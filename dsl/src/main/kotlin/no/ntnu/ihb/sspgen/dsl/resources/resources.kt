@@ -1,4 +1,4 @@
-package no.ntnu.ihb.sspgen.dsl
+package no.ntnu.ihb.sspgen.dsl.resources
 
 import java.io.File
 import java.io.FileInputStream
@@ -6,17 +6,17 @@ import java.io.InputStream
 import java.net.URL
 
 
-interface Resource {
+sealed class Resource {
 
-    val name: String
-    fun readBytes(): ByteArray
-    fun openStream(): InputStream
+    abstract val name: String
+    abstract fun readBytes(): ByteArray
+    abstract fun openStream(): InputStream
 
 }
 
 class FileResource(
     private val file: File
-) : Resource {
+) : Resource() {
 
     override val name: String
         get() = file.name
@@ -35,7 +35,7 @@ class FileResource(
 
 class UrlResource(
     private val url: URL
-) : Resource {
+) : Resource() {
 
     override val name: String
         get() {
