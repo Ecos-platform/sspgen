@@ -60,6 +60,7 @@ class ConnectionsContext(
         )
     }
 
+    @Scoped
     class ConnectionContext(
         private val connection: TSystem.Connections.Connection
     ) {
