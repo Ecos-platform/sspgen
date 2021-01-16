@@ -47,6 +47,11 @@ class SsdContext(
         SystemContext(ssd.system, modelDescriptions, ospModelDescriptions).apply(ctx)
     }
 
+    fun units(ctx: UnitsContext.() -> Unit) {
+        ssd.units = TUnits()
+        UnitsContext(ssd.units).apply(ctx)
+    }
+
     fun defaultExperiment(
         startTime: Number? = null,
         stopTime: Number? = null,
