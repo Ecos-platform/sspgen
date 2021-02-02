@@ -14,38 +14,9 @@ class QuarterTruckTest {
 
     @Test
     fun testInvalidQuarterTruck() {
-
-        val ssp = ssp("QuarterTruck") {
-
-            resources {
-                val fmuPath = QuarterTruckTest::class.java.classLoader.getResource("quarter-truck")!!.file
-                file("$fmuPath/chassis.fmu")
-            }
-
-            ssd("QuarterTruck") {
-
-                system("QuarterTruck") {
-
-                    elements {
-
-                        component("chassis", "resources/chassis.fmu") {
-                            connectors {
-                                real("p.s", output)
-                                real("p.d", input)
-                            }
-                        }
-                    }
-
-                }
-
-            }
-
-        }
-
         Assertions.assertThrows(IllegalStateException::class.java) {
-            ssp.validate()
+            invalidSspDefinition.validate()
         }
-
     }
 
     @Test
@@ -110,6 +81,34 @@ class QuarterTruckTest {
             }
 
         }
+
+        val invalidSspDefinition = ssp("QuarterTruck") {
+
+            resources {
+                val fmuPath = QuarterTruckTest::class.java.classLoader.getResource("quarter-truck")!!.file
+                file("$fmuPath/chassis.fmu")
+            }
+
+            ssd("QuarterTruck") {
+
+                system("QuarterTruck") {
+
+                    elements {
+
+                        component("chassis", "resources/chassis.fmu") {
+                            connectors {
+                                real("p.s", output)
+                                real("p.d", input)
+                            }
+                        }
+                    }
+
+                }
+
+            }
+
+        }
+
 
     }
 
