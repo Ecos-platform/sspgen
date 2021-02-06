@@ -15,8 +15,6 @@ class VDMTest {
     fun test() {
         ssp("QuarterTruck") {
 
-            validate = false
-
             resources(pathToVdm) {
                 val cl = QuarterTruckTest::class.java.classLoader
                 val fmuPath = cl.getResource("quarter-truck")!!.file
