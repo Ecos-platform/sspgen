@@ -13,6 +13,7 @@ import no.ntnu.ihb.sspgen.osp.OspModelDescriptionType
 import no.ntnu.ihb.sspgen.ssp.SystemStructureDescription
 import java.io.*
 import java.net.URL
+import java.net.URLClassLoader
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 import java.util.zip.ZipOutputStream
@@ -54,8 +55,38 @@ class SspContext(
         NamespaceContext(namespaces).apply(ctx)
     }
 
-    fun resources(ctx: ResourcesContext.() -> Unit) {
+    fun resources(vdmJar: File? = null, ctx: ResourcesContext.() -> Unit) {
         ResourcesContext(resources).apply(ctx)
+
+        if (vdmJar != null && vdmJar.exists() && vdmJar.extension == "jar") {
+
+            println("VDMCheck found..")
+            val cl = URLClassLoader(arrayOf(vdmJar.toURI().toURL()))
+            val vdm = cl.loadClass("VDMCheck")
+
+            val vdmMethod = vdm.getDeclaredMethod(
+                "run",
+                String::class.java, String::class.java, String::class.java, String::class.java
+            )
+            resources.filter { it.name.endsWith(".fmu") }.forEach { resource ->
+                val name = resource.name
+                println("Checking modelDescription of $name using VDMCheck..")
+                val xml = FmiModelDescriptionUtil.extractModelDescriptionXml(resource.openStream())
+                val version = FmiModelDescriptionUtil.extractVersion(xml)
+                if (version.startsWith("2.")) {
+                    val xml1 = if (xml.startsWith("<?xml version")) {
+                        xml.split("\n").drop(1).joinToString("\n")
+                    } else {
+                        xml
+                    }
+                    vdmMethod.isAccessible = true
+                    vdmMethod.invoke(null, null, xml1, null, "schema/fmi2ModelDescription.xsd")
+                } else {
+                    System.err.println("Unable to check FMU adhering to version $version of the FMI standard..")
+                }
+            }
+            println("VDMCheck finished..")
+        }
     }
 
     @Scoped
