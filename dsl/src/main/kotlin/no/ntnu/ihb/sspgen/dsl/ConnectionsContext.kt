@@ -22,8 +22,7 @@ class ConnectionsContext(
         return system.elements.component.firstOrNull { it.name == componentName }?.let { c ->
             c.connectors.connector.firstOrNull { it.name == connectorName }
                 ?: throw NoSuchElementException("No connector named '$connectorName' declared for component '$componentName'!")
-        }
-            ?: throw NoSuchElementException("No component named '$componentName' declared for system '${system.name}'!")
+        } ?: throw NoSuchElementException("No component named '$componentName' declared for system '${system.name}'!")
     }
 
     private fun validateConnectionTypes(c1: TConnectors.Connector, c2: TConnectors.Connector) {

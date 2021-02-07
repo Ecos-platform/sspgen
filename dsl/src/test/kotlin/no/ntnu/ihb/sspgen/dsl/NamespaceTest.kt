@@ -10,8 +10,6 @@ internal class NamespaceTest {
 
         val xml = ssp("") {
 
-            validate = false
-
             ssd("dummySsd") {}
 
             namespaces {

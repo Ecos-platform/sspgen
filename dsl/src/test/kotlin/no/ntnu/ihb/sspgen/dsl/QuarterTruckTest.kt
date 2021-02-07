@@ -21,7 +21,7 @@ class QuarterTruckTest {
 
     @Test
     fun testModelDescriptionRetrieval() {
-        Assertions.assertEquals(3, validSspDefinition.modelDescriptions.size)
+        Assertions.assertEquals(3, validSspDefinition.parsedModelDescriptions.size)
     }
 
     private companion object {
@@ -108,7 +108,6 @@ class QuarterTruckTest {
             }
 
         }
-
 
     }
 
