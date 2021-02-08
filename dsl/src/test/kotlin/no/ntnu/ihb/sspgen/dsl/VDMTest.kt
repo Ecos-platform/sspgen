@@ -5,7 +5,7 @@ import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable
 import java.io.File
 
 
-@EnabledIfEnvironmentVariable(named = "VDMCHECK_DIR", matches = ".*vdmcheck-1.0.0$")
+@EnabledIfEnvironmentVariable(named = "VDMCHECK_DIR", matches = ".*vdmcheck-1.*$")
 class VDMTest {
 
     @Test
@@ -26,9 +26,10 @@ class VDMTest {
     }
 
     private companion object {
-        private val pathToVdm = File(
-            "${System.getenv("VDMCHECK_DIR")}/fmi2vdm-1.0.0.jar"
-        )
+        private val vdmDir = File(System.getenv("VDMCHECK_DIR"))
+        private val pathToVdm: File = vdmDir.listFiles()!!.filter {
+            it.name.startsWith("fmi2vdm")
+        }.first()
     }
 
 }
