@@ -11,8 +11,10 @@ import no.ntnu.ihb.sspgen.dsl.resources.Resource
 import no.ntnu.ihb.sspgen.dsl.resources.UrlResource
 import no.ntnu.ihb.sspgen.osp.OspModelDescriptionType
 import no.ntnu.ihb.sspgen.ssp.SystemStructureDescription
+import no.ntnu.ihb.sspgen.sspgen
 import java.io.*
 import java.net.URL
+import java.net.URLClassLoader
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 import java.util.zip.ZipOutputStream
@@ -28,14 +30,17 @@ class SspContext(
     val archiveName: String
 ) {
 
-    var validate = true
-
     private val ssd: SystemStructureDescription = SystemStructureDescription()
     private val resources = mutableListOf<Resource>()
     private val namespaces = mutableListOf<String>()
+    private var validated = false
 
-    internal val modelDescriptions by lazy {
+    private val modelDescriptions: Map<String, String> by lazy {
         retrieveModelDescriptions()
+    }
+
+    internal val parsedModelDescriptions: Map<String, ModelDescription> by lazy {
+        modelDescriptions.mapValues { ModelDescriptionParser.parse(it.value) }
     }
 
     internal val ospModelDescriptions by lazy {
@@ -43,11 +48,10 @@ class SspContext(
     }
 
     fun ssd(name: String, ctx: SsdContext.() -> Unit) {
-        check(!validate || resources.isNotEmpty()) { "The 'resources' block must be defined prior to 'ssd' block!" }
         ssd.name = name
         ssd.version = "1.0"
-        ssd.generationTool = "sspgen"
-        SsdContext(ssd, modelDescriptions, ospModelDescriptions).apply(ctx)
+        ssd.generationTool = "sspgen ${sspgen.version}"
+        SsdContext(ssd, { parsedModelDescriptions }, { ospModelDescriptions }).apply(ctx)
     }
 
     fun namespaces(ctx: NamespaceContext.() -> Unit) {
@@ -121,21 +125,17 @@ class SspContext(
         return xml
     }
 
-    private fun retrieveModelDescriptions(): Map<String, ModelDescription> {
+    private fun retrieveModelDescriptions(): Map<String, String> {
 
-        if (validate && resources.isEmpty()) {
+        if (resources.isEmpty()) {
             throw IllegalStateException("No resources has been defined. Resources must be defined prior to ssd!")
         }
 
-        val modelDescriptions = mutableMapOf<String, ModelDescription>()
-        resources.forEach { resource ->
-            if (resource.name.endsWith(".fmu")) {
-                val xml = FmiModelDescriptionUtil.extractModelDescriptionXml(resource.openStream())
-                val md = ModelDescriptionParser.parse(xml)
-                modelDescriptions[resource.name] = md
-            }
+        return resources.filter { it.name.endsWith(".fmu") }.associate {
+            val xml = FmiModelDescriptionUtil.extractModelDescriptionXml(it.openStream())
+            it.name to xml
         }
-        return modelDescriptions
+
     }
 
     private fun extractOspModelDescription(`is`: InputStream): OspModelDescriptionType? {
@@ -167,37 +167,75 @@ class SspContext(
         return ospModelDescriptions
     }
 
-    internal fun validate() {
+    private fun vdmCheck(vdmJar: File?) {
+        if (vdmJar != null && vdmJar.exists() && vdmJar.extension == "jar") {
 
-        ssd.system.elements.component.forEach { component ->
+            println("VDMCheck found..")
+            val cl = URLClassLoader(arrayOf(vdmJar.toURI().toURL()))
+            val vdm = cl.loadClass("VDMCheck")
+
+            val vdmMethod = vdm.getDeclaredMethod(
+                "run",
+                String::class.java, String::class.java, String::class.java, String::class.java
+            )
+            resources.filter { it.name.endsWith(".fmu") }.forEach { resource ->
+                val name = resource.name
+                println("Checking modelDescription of $name using VDMCheck..")
+                val xml = FmiModelDescriptionUtil.extractModelDescriptionXml(resource.openStream())
+                val version = FmiModelDescriptionUtil.extractVersion(xml)
+                if (version.startsWith("2.")) {
+                    val xml1 = if (xml.startsWith("<?xml version")) {
+                        xml.split("\n").drop(1).joinToString("\n")
+                    } else {
+                        xml
+                    }
+                    vdmMethod.isAccessible = true
+                    vdmMethod.invoke(null, null, xml1, null, "schema/fmi2ModelDescription.xsd")
+                } else {
+                    System.err.println("Unable to check FMU adhering to version $version of the FMI standard..")
+                }
+            }
+            println("VDMCheck finished..")
+        }
+
+    }
+
+    fun validate(vdmJar: File? = null) = apply {
+
+        vdmCheck(vdmJar)
+
+        ssd.system?.elements?.component?.forEach { component ->
 
             val fmuName = component.getSourceFileName()
-            val md = modelDescriptions[fmuName]
+            val md = parsedModelDescriptions[fmuName]
                 ?: throw IllegalStateException("No modelDescription affiliated with $fmuName!")
+            val mv = md.modelVariables
 
             component.connectors.connector.forEach { connector ->
                 val name = connector.name
                 when (connector.typeName()) {
-                    "Integer" -> md.modelVariables.integers.find { it.name == name }
+                    "Integer" -> mv.integers.find { it.name == name }
                         ?: throw IllegalStateException("No Integer variable named $name found within the modelDescription of FMU named $fmuName!")
-                    "Real" -> md.modelVariables.reals.find { it.name == name }
+                    "Real" -> mv.reals.find { it.name == name }
                         ?: throw IllegalStateException("No Real variable named $name found within the modelDescription of FMU named $fmuName!")
-                    "Boolean" -> md.modelVariables.booleans.find { it.name == name }
+                    "Boolean" -> mv.booleans.find { it.name == name }
                         ?: throw IllegalStateException("No Boolean variable named $name found within the modelDescription of FMU named $fmuName!")
-                    "String" -> md.modelVariables.strings.find { it.name == name }
+                    "String" -> mv.strings.find { it.name == name }
                         ?: throw IllegalStateException("No String variable named $name found within the modelDescription of FMU named $fmuName!")
-                    "Enumeration" -> md.modelVariables.enumerations.find { it.name == name }
+                    "Enumeration" -> mv.enumerations.find { it.name == name }
                         ?: throw IllegalStateException("No Enumeration variable named $name found within the modelDescription of FMU named $fmuName!")
                 }
             }
 
         }
 
+        validated = true
+
     }
 
-    fun build(outputDir: File? = null) {
+    fun build(outputDir: File? = null, vdmJar: File? = null) {
 
-        if (validate) validate()
+        if (!validated) validate(vdmJar)
 
         val fileName = if (archiveName.endsWith(".ssp")) {
             archiveName
