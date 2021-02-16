@@ -1,9 +1,10 @@
 package no.ntnu.ihb.sspgen.dsl.resources
 
-import java.io.File
-import java.io.FileInputStream
-import java.io.InputStream
+import java.io.*
+import java.lang.Exception
+import java.lang.RuntimeException
 import java.net.URL
+import java.nio.file.Files
 
 
 sealed class Resource {
@@ -51,6 +52,62 @@ class UrlResource(
         return openStream().buffered().use {
             it.readBytes()
         }
+    }
+
+}
+
+class PythonfmuResource(
+    source: File,
+    projectFiles: List<File> = emptyList()
+) : Resource() {
+
+    override val name: String
+        get() = fmu.name
+
+    private lateinit var fmu: File
+
+    init {
+
+        try {
+            Runtime.getRuntime().exec("pythonfmu")
+        } catch (ex: Exception) {
+            throw RuntimeException("Cannot handle pythonfmu resource as pythonfmu is not available..")
+        }
+
+        println("Building FMU from python sources..")
+        val tempDir = Files.createTempDirectory("pythonfmu").toFile().apply {
+            Runtime.getRuntime().addShutdownHook(Thread {
+                this.deleteRecursively()
+            })
+        }
+        val cmd = mutableListOf<String>(
+            "pythonfmu",
+            "build",
+            "-d",
+            tempDir.absolutePath,
+            "-f",
+            source.absolutePath
+        )
+        if (projectFiles.isNotEmpty()) {
+            projectFiles.map { it.absolutePath }.forEach(cmd::add)
+        }
+
+        try {
+            val status = Runtime.getRuntime().exec(cmd.toTypedArray()).waitFor()
+            fmu = tempDir.listFiles()?.first() ?: throw IllegalStateException()
+            println("Building FMU from python sources done with status ${status}..")
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+        }
+
+    }
+
+    override fun readBytes(): ByteArray {
+        return openStream().buffered().readBytes()
+    }
+
+    override fun openStream(): InputStream {
+        return FileInputStream(fmu)
     }
 
 }
