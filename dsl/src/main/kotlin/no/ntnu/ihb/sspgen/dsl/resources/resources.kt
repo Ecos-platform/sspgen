@@ -2,6 +2,7 @@ package no.ntnu.ihb.sspgen.dsl.resources
 
 import java.io.*
 import java.lang.Exception
+import java.lang.RuntimeException
 import java.net.URL
 import java.nio.file.Files
 
@@ -66,6 +67,13 @@ class PythonfmuResource(
     private lateinit var fmu: File
 
     init {
+
+        try {
+            Runtime.getRuntime().exec("pythonfmu")
+        } catch (ex: Exception) {
+            throw RuntimeException("Cannot handle pythonfmu resource as pythonfmu is not available..")
+        }
+
         println("Building FMU from python sources..")
         val tempDir = Files.createTempDirectory("pythonfmu").toFile().apply {
             Runtime.getRuntime().addShutdownHook(Thread {
@@ -80,10 +88,10 @@ class PythonfmuResource(
             "-f",
             source.absolutePath
         )
-        println(cmd.joinToString(" "))
         if (projectFiles.isNotEmpty()) {
             projectFiles.map { it.absolutePath }.forEach(cmd::add)
         }
+
         try {
             val status = Runtime.getRuntime().exec(cmd.toTypedArray()).waitFor()
             fmu = tempDir.listFiles()?.first() ?: throw IllegalStateException()
