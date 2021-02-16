@@ -2,12 +2,11 @@ package no.ntnu.ihb.sspgen.dsl.resources
 
 import java.io.*
 import java.lang.Exception
-import java.lang.IllegalStateException
 import java.net.URL
 import java.nio.file.Files
 
 
-sealed class Resource : Closeable {
+sealed class Resource {
 
     abstract val name: String
     abstract fun readBytes(): ByteArray
@@ -32,8 +31,6 @@ class FileResource(
         }
     }
 
-    override fun close() {}
-
 }
 
 class UrlResource(
@@ -56,8 +53,6 @@ class UrlResource(
         }
     }
 
-    override fun close() {}
-
 }
 
 class PythonfmuResource(
@@ -66,14 +61,17 @@ class PythonfmuResource(
 ) : Resource() {
 
     override val name: String
-        get() = fmu.nameWithoutExtension
+        get() = fmu.name
 
-    private val tempDir = Files.createTempDirectory("pythonfmu").toFile()
-    private val fmu: File by lazy { tempDir.listFiles()?.first() ?: throw IllegalStateException() }
+    private lateinit var fmu: File
 
     init {
         println("Building FMU from python sources..")
-        val tempDir = Files.createTempDirectory("pythonfmu").toFile()
+        val tempDir = Files.createTempDirectory("pythonfmu").toFile().apply {
+            Runtime.getRuntime().addShutdownHook(Thread {
+                this.deleteRecursively()
+            })
+        }
         val cmd = mutableListOf<String>(
             "pythonfmu",
             "build",
@@ -82,14 +80,18 @@ class PythonfmuResource(
             "-f",
             source.absolutePath
         )
+        println(cmd.joinToString(" "))
         if (projectFiles.isNotEmpty()) {
             projectFiles.map { it.absolutePath }.forEach(cmd::add)
         }
         try {
-            Runtime.getRuntime().exec(cmd.toTypedArray())
+            val status = Runtime.getRuntime().exec(cmd.toTypedArray()).waitFor()
+            fmu = tempDir.listFiles()?.first() ?: throw IllegalStateException()
+            println("Building FMU from python sources done with status ${status}..")
         } catch (ex: Exception) {
             ex.printStackTrace()
         }
+
     }
 
     override fun readBytes(): ByteArray {
@@ -98,10 +100,6 @@ class PythonfmuResource(
 
     override fun openStream(): InputStream {
         return FileInputStream(fmu)
-    }
-
-    override fun close() {
-        tempDir.deleteRecursively()
     }
 
 }

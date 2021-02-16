@@ -96,7 +96,9 @@ class SspContext(
         fun pythonfmu(source: String, vararg projectFiles: String) {
             val sourceFile = File(source)
             if (!sourceFile.exists()) throw NoSuchFileException(sourceFile)
-            PythonfmuResource(sourceFile, projectFiles.map { File(it) })
+            PythonfmuResource(sourceFile, projectFiles.map { File(it) }).also { resource ->
+                resources.add(resource)
+            }
         }
 
     }
