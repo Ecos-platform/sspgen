@@ -3,13 +3,16 @@ package no.ntnu.ihb.sspgen.dsl
 import no.ntnu.ihb.fmi4j.modeldescription.ModelDescription
 import no.ntnu.ihb.sspgen.dsl.annotations.Scoped
 import no.ntnu.ihb.sspgen.osp.OspModelDescriptionType
-import no.ntnu.ihb.sspgen.ssp.*
+import no.ntnu.ihb.sspgen.ssp.SystemStructureDescription
+import no.ntnu.ihb.sspgen.ssp.TDefaultExperiment
+import no.ntnu.ihb.sspgen.ssp.TSystem
+import no.ntnu.ihb.sspgen.ssp.TUnits
 
 @Scoped
 class SsdContext(
     private val ssd: SystemStructureDescription,
-    private val modelDescriptions: Map<String, ModelDescription>,
-    private val ospModelDescriptions: Map<String, OspModelDescriptionType>
+    private val modelDescriptions: () -> Map<String, ModelDescription>,
+    private val ospModelDescriptions: () -> Map<String, OspModelDescriptionType>
 ) {
 
     var author: String?
@@ -45,6 +48,11 @@ class SsdContext(
     fun system(name: String, ctx: SystemContext.() -> Unit) {
         ssd.system = TSystem().apply { this.name = name }
         SystemContext(ssd.system, modelDescriptions, ospModelDescriptions).apply(ctx)
+    }
+
+    fun units(ctx: UnitsContext.() -> Unit) {
+        ssd.units = TUnits()
+        UnitsContext(ssd.units).apply(ctx)
     }
 
     fun defaultExperiment(

@@ -3,7 +3,6 @@ package no.ntnu.ihb.sspgen.dsl
 import no.ntnu.ihb.fmi4j.modeldescription.ModelDescription
 import no.ntnu.ihb.fmi4j.modeldescription.variables.Causality
 import no.ntnu.ihb.sspgen.dsl.annotations.Scoped
-import no.ntnu.ihb.sspgen.dsl.extensions.extractElementAndConnectorNames
 import no.ntnu.ihb.sspgen.dsl.extensions.getSourceFileName
 import no.ntnu.ihb.sspgen.osp.OspModelDescriptionType
 import no.ntnu.ihb.sspgen.osp.VariableType
@@ -40,7 +39,7 @@ class OspConnectionsContext(
 
         }
 
-        throw IllegalStateException()
+        throw IllegalStateException("No variable group named '${this.groupName}' found in component '${this.componentName}'")
     }
 
     private fun Any.getTypes(): List<Any> {

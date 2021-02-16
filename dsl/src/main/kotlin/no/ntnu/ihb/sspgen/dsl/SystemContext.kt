@@ -11,8 +11,8 @@ import no.ntnu.ihb.sspgen.ssp.TSystem
 @Scoped
 class SystemContext(
     private val system: TSystem,
-    private val modelDescriptions: Map<String, ModelDescription>,
-    private val ospModelDescriptions: Map<String, OspModelDescriptionType>
+    private val modelDescriptions: () -> Map<String, ModelDescription>,
+    private val ospModelDescriptions: () -> Map<String, OspModelDescriptionType>
 ) {
 
     var description: String? = system.description
@@ -32,7 +32,7 @@ class SystemContext(
     }
 
     fun ospConnections(ctx: OspConnectionsContext.() -> Unit) {
-        OspConnectionsContext(system, modelDescriptions, ospModelDescriptions).apply(ctx)
+        OspConnectionsContext(system, modelDescriptions.invoke(), ospModelDescriptions.invoke()).apply(ctx)
     }
 
     fun annotations(ctx: AnnotationsContext.() -> Unit) {

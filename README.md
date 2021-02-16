@@ -244,11 +244,15 @@ ssp(archiveName: String) {
 
 ```
 
+#### Integration with FMI-VDM-Model
+
+sspgen integrates with [FMI-VDM-Model](https://github.com/INTO-CPS-Association/FMI-VDM-Model), allowing optional static
+ananysis of the included FMUs for informative purposes. To use, simply provide the path to the `fmi2vdm.jar` when
+invoking `validate` or `build`.
 
 #### Gradle plugin
 
-sspgen exists as a gradle plugin.
-To use it, add the following to `settings.gradle`:
+sspgen exists as a gradle plugin. To use it, add the following to `settings.gradle`:
 
 ```groovy
 pluginManagement {
