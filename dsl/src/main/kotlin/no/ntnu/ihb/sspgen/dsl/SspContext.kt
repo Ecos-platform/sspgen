@@ -7,6 +7,7 @@ import no.ntnu.ihb.sspgen.dsl.annotations.Scoped
 import no.ntnu.ihb.sspgen.dsl.extensions.getSourceFileName
 import no.ntnu.ihb.sspgen.dsl.extensions.typeName
 import no.ntnu.ihb.sspgen.dsl.resources.FileResource
+import no.ntnu.ihb.sspgen.dsl.resources.PythonfmuResource
 import no.ntnu.ihb.sspgen.dsl.resources.Resource
 import no.ntnu.ihb.sspgen.dsl.resources.UrlResource
 import no.ntnu.ihb.sspgen.osp.OspModelDescriptionType
@@ -86,6 +87,12 @@ class SspContext(
             UrlResource(URL(urlString)).also { resource ->
                 resources.add(resource)
             }
+        }
+
+        fun pythonfmu(source: String, vararg projectFiles: String) {
+            val sourceFile = File(source)
+            if (!sourceFile.exists()) throw NoSuchFileException(sourceFile)
+            PythonfmuResource(sourceFile, projectFiles.map { File(it) })
         }
 
     }

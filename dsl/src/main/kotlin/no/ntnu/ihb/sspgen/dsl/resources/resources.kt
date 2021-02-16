@@ -1,12 +1,13 @@
 package no.ntnu.ihb.sspgen.dsl.resources
 
-import java.io.File
-import java.io.FileInputStream
-import java.io.InputStream
+import java.io.*
+import java.lang.Exception
+import java.lang.IllegalStateException
 import java.net.URL
+import java.nio.file.Files
 
 
-sealed class Resource {
+sealed class Resource : Closeable {
 
     abstract val name: String
     abstract fun readBytes(): ByteArray
@@ -31,6 +32,8 @@ class FileResource(
         }
     }
 
+    override fun close() {}
+
 }
 
 class UrlResource(
@@ -51,6 +54,54 @@ class UrlResource(
         return openStream().buffered().use {
             it.readBytes()
         }
+    }
+
+    override fun close() {}
+
+}
+
+class PythonfmuResource(
+    source: File,
+    projectFiles: List<File> = emptyList()
+) : Resource() {
+
+    override val name: String
+        get() = fmu.nameWithoutExtension
+
+    private val tempDir = Files.createTempDirectory("pythonfmu").toFile()
+    private val fmu: File by lazy { tempDir.listFiles()?.first() ?: throw IllegalStateException() }
+
+    init {
+        println("Building FMU from python sources..")
+        val tempDir = Files.createTempDirectory("pythonfmu").toFile()
+        val cmd = mutableListOf<String>(
+            "pythonfmu",
+            "build",
+            "-d",
+            tempDir.absolutePath,
+            "-f",
+            source.absolutePath
+        )
+        if (projectFiles.isNotEmpty()) {
+            projectFiles.map { it.absolutePath }.forEach(cmd::add)
+        }
+        try {
+            Runtime.getRuntime().exec(cmd.toTypedArray())
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+        }
+    }
+
+    override fun readBytes(): ByteArray {
+        return openStream().buffered().readBytes()
+    }
+
+    override fun openStream(): InputStream {
+        return FileInputStream(fmu)
+    }
+
+    override fun close() {
+        tempDir.deleteRecursively()
     }
 
 }
