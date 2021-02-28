@@ -23,7 +23,7 @@ open class AnnotationsContext(
 class ComponentAnnotationsContext(
     private val components: MutableList<TComponent>,
     private val annotations: TAnnotations
-): AnnotationsContext(annotations) {
+) : AnnotationsContext(annotations) {
 
     fun copyFrom(name: String) {
         val component = components.firstOrNull { it.name == name }

@@ -8,17 +8,19 @@ internal class NamespaceTest {
     @Test
     fun testNamespace() {
 
-        val xml = ssp("") {
+        ssp("dummyArchive") {
 
-            ssd("dummySsd") {}
+            val xml = ssd("dummySsd") {
 
-            namespaces {
-                namespace("osp", "http://opensimulationplatform.com/SSP/OSPAnnotations")
-            }
+                namespaces {
+                    namespace("osp", "http://opensimulationplatform.com/SSP/OSPAnnotations")
+                }
 
-        }.ssdXml()
+            }.ssdXml()
 
-        Assertions.assertTrue("xmlns:osp=" in xml)
+            Assertions.assertTrue("xmlns:osp=" in xml)
+
+        }
 
     }
 

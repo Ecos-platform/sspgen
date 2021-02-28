@@ -6,15 +6,9 @@ import no.ntnu.ihb.fmi4j.modeldescription.util.FmiModelDescriptionUtil
 import no.ntnu.ihb.sspgen.dsl.annotations.Scoped
 import no.ntnu.ihb.sspgen.dsl.extensions.getSourceFileName
 import no.ntnu.ihb.sspgen.dsl.extensions.typeName
-import no.ntnu.ihb.sspgen.dsl.resources.FileResource
-import no.ntnu.ihb.sspgen.dsl.resources.PythonfmuResource
 import no.ntnu.ihb.sspgen.dsl.resources.Resource
-import no.ntnu.ihb.sspgen.dsl.resources.UrlResource
 import no.ntnu.ihb.sspgen.osp.OspModelDescriptionType
-import no.ntnu.ihb.sspgen.ssp.SystemStructureDescription
-import no.ntnu.ihb.sspgen.sspgen
 import java.io.*
-import java.net.URL
 import java.net.URLClassLoader
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
@@ -31,11 +25,6 @@ class SspContext(
     val archiveName: String
 ) {
 
-    private val ssd: SystemStructureDescription = SystemStructureDescription()
-    private val resources = mutableListOf<Resource>()
-    private val namespaces = mutableListOf<String>()
-    private var validated = false
-
     private val modelDescriptions: Map<String, String> by lazy {
         retrieveModelDescriptions()
     }
@@ -48,90 +37,18 @@ class SspContext(
         retrieveOspModelDescriptions()
     }
 
-    fun ssd(name: String, ctx: SsdContext.() -> Unit) {
-        ssd.name = name
-        ssd.version = "1.0"
-        ssd.generationTool = "sspgen ${sspgen.version}"
-        SsdContext(ssd, { parsedModelDescriptions }, { ospModelDescriptions }).apply(ctx)
-    }
+    private val resources = mutableListOf<Resource>()
+    private lateinit var ssdCtx: SsdContext
+    private var validated = false
 
-    fun namespaces(ctx: NamespaceContext.() -> Unit) {
-        NamespaceContext(namespaces).apply(ctx)
+    fun ssd(name: String, ctx: SsdContext.() -> Unit): SsdContext {
+        return SsdContext(name, { parsedModelDescriptions }, { ospModelDescriptions }).apply(ctx).also {
+            ssdCtx = it
+        }
     }
 
     fun resources(ctx: ResourcesContext.() -> Unit) {
         ResourcesContext(resources).apply(ctx)
-    }
-
-    @Scoped
-    inner class NamespaceContext(
-        private val namespaces: MutableList<String>
-    ) {
-
-        fun namespace(namespace: String, uri: String) {
-            namespaces.add("xmlns:$namespace=\"$uri\"")
-        }
-
-    }
-
-    @Scoped
-    inner class ResourcesContext(
-        private val resources: MutableList<Resource>
-    ) {
-
-        fun file(filePath: String) {
-            val file = File(filePath)
-            if (!file.exists()) throw NoSuchFileException(file)
-            FileResource(file).also { resource ->
-                resources.add(resource)
-            }
-        }
-
-        fun url(urlString: String) {
-            UrlResource(URL(urlString)).also { resource ->
-                resources.add(resource)
-            }
-        }
-
-        fun pythonfmu(source: String, vararg projectFiles: String) {
-            val sourceFile = File(source)
-            if (!sourceFile.exists()) throw NoSuchFileException(sourceFile)
-            PythonfmuResource(sourceFile, projectFiles.map { File(it) }).also { resource ->
-                resources.add(resource)
-            }
-        }
-
-    }
-
-    fun ssdXml(): String {
-
-        var xml = ByteArrayOutputStream().use { baos ->
-            JAXB.marshal(ssd, baos)
-            baos.toString()
-        }
-
-        xml = xml.replace("ns2:", "ssd:")
-        xml = xml.replace("ns3:", "ssc:")
-        xml = xml.replace("ns4:", "ssv:")
-        xml = xml.replace("xmlns:ns2", "xmlns:ssd")
-        xml = xml.replace("xmlns:ns3", "xmlns:ssc")
-        xml = xml.replace("xmlns:ns4", "xmlns:ssv")
-        xml = xml.replace("xmlns:ns5", "xmlns:ssb")
-
-        xml = xml.replace("<any>", "")
-        xml = xml.replace("</any>", "")
-        xml = xml.replace("&lt;", "<")
-        xml = xml.replace("/&gt;", "/>")
-        xml = xml.replace("&gt;", ">")
-
-        if (namespaces.isNotEmpty()) {
-            val indexOf = xml.indexOf("xmlns")
-            namespaces.forEach { namespace ->
-                xml = xml.substring(0, indexOf) + "$namespace " + xml.substring(indexOf)
-            }
-        }
-
-        return xml
     }
 
     private fun retrieveModelDescriptions(): Map<String, String> {
@@ -213,7 +130,7 @@ class SspContext(
 
         vdmCheck(vdmJar)
 
-        ssd.system?.elements?.component?.forEach { component ->
+        ssdCtx.ssd.system?.elements?.component?.forEach { component ->
 
             val fmuName = component.getSourceFileName()
             val md = parsedModelDescriptions[fmuName]
@@ -262,7 +179,7 @@ class SspContext(
         ZipOutputStream(FileOutputStream(sspArchive).buffered()).use { zos ->
 
             zos.putNextEntry(ZipEntry("SystemStructure.ssd"))
-            zos.write(ssdXml().toByteArray())
+            zos.write(ssdCtx.ssdXml().toByteArray())
             zos.closeEntry()
 
             if (resources.isNotEmpty()) {
