@@ -24,7 +24,7 @@ _note_: File names MUST end with `.main.kts`
 #!kotlin
 
 @file:Repository("https://dl.bintray.com/ntnu-ihb/mvn")
-@file:DependsOn("no.ntnu.ihb.sspgen:dsl:0.4.0")
+@file:DependsOn("no.ntnu.ihb.sspgen:dsl:0.4.3")
 
 import no.ntnu.ihb.sspgen.dsl.*
 
@@ -158,6 +158,7 @@ ssp(archiveName: String) {
     resources {
         file(path: String)
         url(path: String)
+        pythonfmu(sourcePath: String, vararg projectFiles: String)
     }
 
     ssd(name: String) {
