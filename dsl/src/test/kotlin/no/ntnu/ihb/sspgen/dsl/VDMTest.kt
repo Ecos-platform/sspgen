@@ -21,6 +21,10 @@ class VDMTest {
                 file("$fmuPath/ground.fmu")
             }
 
+            ssd("quarter-truck") {
+
+            }
+
         }.validate(pathToVdm)
 
     }
