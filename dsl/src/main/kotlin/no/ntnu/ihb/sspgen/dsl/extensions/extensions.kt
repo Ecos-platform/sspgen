@@ -13,7 +13,12 @@ internal fun String.extractElementAndConnectorNames(): Pair<String, String> {
 }
 
 internal fun TComponent.getSourceFileName(): String {
-    return source.replace("resources/", "")
+    var source = source.replace("resources/", "")
+    val idx = source.indexOf("file=")
+    if (idx != -1) {
+        source = source.substring(idx + 5)
+    }
+    return source
 }
 
 internal fun TParameter.copy(): TParameter {
