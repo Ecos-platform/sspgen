@@ -23,8 +23,7 @@ _note_: File names MUST end with `.main.kts`
 ```kotlin
 #!kotlin
 
-@file:Repository("https://dl.bintray.com/ntnu-ihb/mvn")
-@file:DependsOn("no.ntnu.ihb.sspgen:dsl:0.4.3")
+@file:DependsOn("no.ntnu.ihb.sspgen:dsl:0.5.1")
 
 import no.ntnu.ihb.sspgen.dsl.*
 
@@ -248,34 +247,5 @@ ssp(archiveName: String) {
 #### Integration with FMI-VDM-Model
 
 sspgen integrates with [FMI-VDM-Model](https://github.com/INTO-CPS-Association/FMI-VDM-Model), allowing optional static
-ananysis of the included FMUs for informative purposes. To use, simply provide the path to the `fmi2vdm.jar` when
+analysis of the included FMUs for informative purposes. To use, simply provide the path to the `fmi2vdm.jar` when
 invoking `validate` or `build`.
-
-#### Gradle plugin
-
-sspgen exists as a gradle plugin. To use it, add the following to `settings.gradle`:
-
-```groovy
-pluginManagement {
-    repositories {
-        mavenCentral()
-        maven { url "https://plugins.gradle.org/m2/" }
-        maven { url "https://dl.bintray.com/ntnu-ihb/mvn" }
-    }
-}
-```
-
-And apply the plugin as usual:
-
-```groovy
-plugins {
-    id 'no.ntnu.ihb.sspgen' version '0.x.x'
-}
-
-sspgen {
-    outputDir: String
-    files: List<String>
-    urls: List<String>
-}
-
-```
