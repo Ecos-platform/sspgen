@@ -10,7 +10,7 @@ wrapper {
 
 println "Gradle version is ${gradle.getGradleVersion()}"
 
-group 'no.ntnu.ihb.sspgen'
+group 'info.laht.sspgen'
 version = rootProject.file("VERSION").newReader().readLine()
 println("Building ${project.name} v$version")
 
@@ -23,7 +23,6 @@ subprojects { sub ->
 
     repositories {
         mavenCentral()
-        maven { url "https://dl.bintray.com/ntnu-ihb/mvn" }
     }
 
     dependencies {

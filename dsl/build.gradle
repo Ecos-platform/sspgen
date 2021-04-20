@@ -1,14 +1,13 @@
 plugins {
     id 'kotlin'
     id 'java-library'
-    id "com.jfrog.bintray" version "1.8.4"
 }
 
-apply from: rootProject.file("gradle/mavenpublish.gradle")
+apply from: rootProject.file("gradle/publisher.gradle")
 
 dependencies {
 
-    api 'no.ntnu.ihb.fmi4j:fmi-import:0.36.3'
+    api 'info.laht.fmi4j:fmi-import:0.37.0'
 
     api group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
     api group: 'org.glassfish.jaxb', name: 'jaxb-core', version: '2.3.0.1'
@@ -21,14 +20,14 @@ sourceSets.main.kotlin.srcDirs += generatedSourceDir.absolutePath
 
 task injectVersion() {
     doLast {
-        def packageFolder = project.group.replace(".", "/")
+        def packageFolder ="no/ntnu/ihb/ssppgen"
         def versionFile = new File(generatedSourceDir, "$packageFolder/version.kt")
         if (!versionFile.parentFile.exists()) {
             versionFile.parentFile.mkdirs()
             versionFile.createNewFile()
         }
         versionFile.write(
-                "package ${project.group}\n\n" +
+                "package no.ntnu.ihb.sspgen\n\n" +
                         "object sspgen {\n\n" +
                         "   @JvmField\n" +
                         "   val version = \"${project.version}\"\n\n" +
@@ -39,24 +38,3 @@ task injectVersion() {
 }
 
 compileKotlin.dependsOn injectVersion
-
-if (hasProperty("bintrayUser") && hasProperty("bintrayKey")) {
-
-    bintray {
-        user = bintrayUser
-        key = bintrayKey
-        publish = true
-        publications = ["maven"]
-        pkg {
-            userOrg = "ntnu-ihb"
-            repo = "mvn"
-            name = "sspgen"
-            websiteUrl = "https://github.com/NTNU-IHB/sspgen"
-            vcsUrl = "https://github.com/NTNU-IHB/sspgen"
-            licenses = ["MIT"]
-        }
-    }
-
-}
-
-
