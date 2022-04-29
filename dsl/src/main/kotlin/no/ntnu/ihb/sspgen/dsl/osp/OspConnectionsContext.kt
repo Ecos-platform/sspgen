@@ -23,7 +23,7 @@ class OspConnectionsContext(
         vgs.javaClass.declaredFields.forEach { f1 ->
 
             f1.getAnnotation(XmlElement::class.java)?.also { annotation ->
-                if (annotation.name.toLowerCase().contains("port")) {
+                if (annotation.name.lowercase().contains("port")) {
                     f1.isAccessible = true
                     (f1.get(vgs) as? List<*>)?.onEach { e ->
                         val name = e!!.javaClass.getDeclaredField("name").let {
@@ -46,7 +46,7 @@ class OspConnectionsContext(
         val types = mutableListOf<Any>()
         this.javaClass.declaredFields.forEach { f1 ->
             f1.getAnnotation(XmlElement::class.java)?.also {
-                if (f1.type.name.toLowerCase().contains("type")) {
+                if (f1.type.name.lowercase().contains("type")) {
                     f1.isAccessible = true
                     types.add(f1.get(this))
                 }
