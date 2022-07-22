@@ -7,7 +7,7 @@ apply from: rootProject.file("gradle/publisher.gradle")
 
 dependencies {
 
-    api 'info.laht.fmi4j:fmi-import:0.37.0'
+    api 'info.laht.fmi4j:fmi-import:0.37.2'
 
     api group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
     api group: 'org.glassfish.jaxb', name: 'jaxb-core', version: '2.3.0.1'
