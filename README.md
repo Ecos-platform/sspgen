@@ -23,7 +23,7 @@ _note_: File names MUST end with `.main.kts`
 ```kotlin
 #!kotlin
 
-@file:DependsOn("info.laht.sspgen:dsl:0.5.1")
+@file:DependsOn("info.laht.sspgen:dsl:0.5.2")
 
 import no.ntnu.ihb.sspgen.dsl.*
 
