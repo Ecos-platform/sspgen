@@ -8,6 +8,7 @@ import no.ntnu.ihb.sspgen.dsl.extensions.getSourceFileName
 import no.ntnu.ihb.sspgen.dsl.extensions.typeName
 import no.ntnu.ihb.sspgen.dsl.resources.Resource
 import no.ntnu.ihb.sspgen.osp.OspModelDescriptionType
+import no.ntnu.ihb.sspgen.sspgen
 import java.io.*
 import java.net.URLClassLoader
 import java.util.zip.ZipEntry
@@ -160,6 +161,8 @@ class SspContext(
     }
 
     fun build(outputDir: File? = null, vdmJar: File? = null) {
+
+        println("sspgen v${sspgen.version}")
 
         if (!validated) validate(vdmJar)
 
