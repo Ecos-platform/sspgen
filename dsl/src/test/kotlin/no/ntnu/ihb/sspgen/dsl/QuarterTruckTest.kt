@@ -2,6 +2,7 @@ package no.ntnu.ihb.sspgen.dsl
 
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import java.nio.file.Files
 
 class QuarterTruckTest {
 
@@ -22,6 +23,18 @@ class QuarterTruckTest {
     @Test
     fun testModelDescriptionRetrieval() {
         Assertions.assertEquals(3, validSspDefinition.parsedModelDescriptions.size)
+    }
+
+    @Test
+    fun testBuild() {
+        val tmp = Files.createTempDirectory("sspgen").toFile()
+        try {
+            validSspDefinition.build(tmp)
+            Assertions.assertEquals(1,tmp.listFiles().size)
+            Assertions.assertEquals("QuarterTruck.ssp",tmp.listFiles()[0].name)
+        } finally {
+            tmp.deleteRecursively()
+        }
     }
 
     private companion object {
