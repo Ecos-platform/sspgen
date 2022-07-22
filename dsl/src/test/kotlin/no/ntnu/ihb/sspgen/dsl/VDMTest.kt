@@ -15,7 +15,7 @@ class VDMTest {
 
             resources {
                 val cl = QuarterTruckTest::class.java.classLoader
-                val fmuPath = cl.getResource("quarter-truck")!!.file
+                val fmuPath = cl.getResource("quarter-truck")!!.file.replace("%20", " ")
                 file("$fmuPath/chassis.fmu")
                 file("$fmuPath/wheel.fmu")
                 file("$fmuPath/ground.fmu")

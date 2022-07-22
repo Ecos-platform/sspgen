@@ -30,7 +30,7 @@ class QuarterTruckTest {
 
             resources {
                 val cl = QuarterTruckTest::class.java.classLoader
-                val fmuPath = cl.getResource("quarter-truck")!!.file
+                val fmuPath = cl.getResource("quarter-truck")!!.file.replace("%20", " ")
                 file("$fmuPath/chassis.fmu")
                 file("$fmuPath/wheel.fmu")
                 file("$fmuPath/ground.fmu")
@@ -85,7 +85,8 @@ class QuarterTruckTest {
         val invalidSspDefinition = ssp("QuarterTruck") {
 
             resources {
-                val fmuPath = QuarterTruckTest::class.java.classLoader.getResource("quarter-truck")!!.file
+                val cl = QuarterTruckTest::class.java.classLoader
+                val fmuPath = cl.getResource("quarter-truck")!!.file.replace("%20", " ")
                 file("$fmuPath/chassis.fmu")
             }
 
