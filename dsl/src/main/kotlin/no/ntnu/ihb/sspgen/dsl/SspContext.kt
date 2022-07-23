@@ -158,13 +158,19 @@ class SspContext(
             component.parameterBindings?.parameterBinding?.forEach { binding ->
                 binding.parameterValues?.parameterSet?.forEach { set ->
                     set.parameters?.parameter?.forEach { p ->
-                        val v = mv.getByName(p.name)
-                        when(v.type) {
-                            VariableType.INTEGER -> require(p.integer != null) {"Expected ${component.name}::${p.name} to be of type INTEGER."}
-                            VariableType.REAL -> require(p.real != null) {"Expected ${component.name}::${p.name} to be of type ${v.type.typeName}, but found ${p.typeName()}."}
-                            VariableType.BOOLEAN -> require(p.boolean != null) {"Expected ${component.name}::${p.name} to be of type BOOLEAN."}
-                            VariableType.STRING -> require(p.string != null) {"Expected ${component.name}::${p.name} to be of type STRING."}
-                            VariableType.ENUMERATION -> require(p.enumeration != null) {"Expected ${component.name}::${p.name} to be of type ENUMERATION."}
+                        val v = mv.getByNameOrNull(p.name)
+                            ?: throw IllegalStateException("No variable ${p.name} exists for component ${component.name}!")
+                        when (v.type) {
+                            VariableType.INTEGER -> require(p.integer != null)
+                            { "Expected ${component.name}::${p.name} to be of type INTEGER!" }
+                            VariableType.REAL -> require(p.real != null)
+                            { "Expected ${component.name}::${p.name} to be of type ${v.type.typeName}, but found ${p.typeName()}!" }
+                            VariableType.BOOLEAN -> require(p.boolean != null)
+                            { "Expected ${component.name}::${p.name} to be of type BOOLEAN!" }
+                            VariableType.STRING -> require(p.string != null)
+                            { "Expected ${component.name}::${p.name} to be of type STRING!" }
+                            VariableType.ENUMERATION -> require(p.enumeration != null)
+                            { "Expected ${component.name}::${p.name} to be of type ENUMERATION!" }
                         }
                     }
                 }
