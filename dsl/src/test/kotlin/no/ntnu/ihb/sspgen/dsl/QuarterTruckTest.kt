@@ -30,8 +30,8 @@ class QuarterTruckTest {
         val tmp = Files.createTempDirectory("sspgen").toFile()
         try {
             validSspDefinition.build(tmp)
-            Assertions.assertEquals(1,tmp.listFiles()?.size)
-            Assertions.assertEquals("QuarterTruck.ssp",tmp.listFiles()?.get(0))
+            Assertions.assertEquals(1, tmp.listFiles()?.size)
+            Assertions.assertEquals("QuarterTruck.ssp", tmp.listFiles()?.get(0)?.name)
         } finally {
             tmp.deleteRecursively()
         }
@@ -59,6 +59,11 @@ class QuarterTruckTest {
                             connectors {
                                 real("p.e", output)
                                 real("p.f", input)
+                            }
+                            parameterBindings {
+                                parameterSet("initialValues") {
+                                    real("C.mChassis", 400)
+                                }
                             }
                         }
 
