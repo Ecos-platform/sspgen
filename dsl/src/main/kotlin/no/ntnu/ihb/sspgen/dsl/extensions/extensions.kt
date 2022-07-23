@@ -70,3 +70,15 @@ internal fun TConnectors.Connector.typeName(): String {
         else -> throw IllegalArgumentException()
     }
 }
+
+internal fun TParameter.typeName(): String {
+    return when {
+        integer != null -> "Integer"
+        real != null -> "Real"
+        string != null -> "String"
+        boolean != null -> "Boolean"
+        enumeration != null -> "Enumeration"
+        binary != null -> "Binary"
+        else -> throw IllegalArgumentException()
+    }
+}
