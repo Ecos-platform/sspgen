@@ -30,8 +30,8 @@ class QuarterTruckTest {
         val tmp = Files.createTempDirectory("sspgen").toFile()
         try {
             validSspDefinition.build(tmp)
-            Assertions.assertEquals(1,tmp.listFiles().size)
-            Assertions.assertEquals("QuarterTruck.ssp",tmp.listFiles()[0].name)
+            Assertions.assertEquals(1,tmp.listFiles()?.size)
+            Assertions.assertEquals("QuarterTruck.ssp",tmp.listFiles()?.get(0))
         } finally {
             tmp.deleteRecursively()
         }
