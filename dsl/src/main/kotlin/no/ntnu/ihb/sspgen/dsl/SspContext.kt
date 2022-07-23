@@ -3,6 +3,7 @@ package no.ntnu.ihb.sspgen.dsl
 import no.ntnu.ihb.fmi4j.modeldescription.ModelDescription
 import no.ntnu.ihb.fmi4j.modeldescription.ModelDescriptionParser
 import no.ntnu.ihb.fmi4j.modeldescription.util.FmiModelDescriptionUtil
+import no.ntnu.ihb.fmi4j.modeldescription.variables.VariableType
 import no.ntnu.ihb.sspgen.dsl.annotations.Scoped
 import no.ntnu.ihb.sspgen.dsl.extensions.getSourceFileName
 import no.ntnu.ihb.sspgen.dsl.extensions.typeName
@@ -151,6 +152,27 @@ class SspContext(
                         ?: throw IllegalStateException("No String variable named $name found within the modelDescription of FMU named $fmuName!")
                     "Enumeration" -> mv.enumerations.find { it.name == name }
                         ?: throw IllegalStateException("No Enumeration variable named $name found within the modelDescription of FMU named $fmuName!")
+                }
+            }
+
+            component.parameterBindings?.parameterBinding?.forEach { binding ->
+                binding.parameterValues?.parameterSet?.forEach { set ->
+                    set.parameters?.parameter?.forEach { p ->
+                        val v = mv.getByNameOrNull(p.name)
+                            ?: throw IllegalStateException("No variable ${p.name} exists for component ${component.name}!")
+                        when (v.type) {
+                            VariableType.INTEGER -> require(p.integer != null)
+                            { "Expected ${component.name}::${p.name} to be of type INTEGER!" }
+                            VariableType.REAL -> require(p.real != null)
+                            { "Expected ${component.name}::${p.name} to be of type ${v.type.typeName}, but found ${p.typeName()}!" }
+                            VariableType.BOOLEAN -> require(p.boolean != null)
+                            { "Expected ${component.name}::${p.name} to be of type BOOLEAN!" }
+                            VariableType.STRING -> require(p.string != null)
+                            { "Expected ${component.name}::${p.name} to be of type STRING!" }
+                            VariableType.ENUMERATION -> require(p.enumeration != null)
+                            { "Expected ${component.name}::${p.name} to be of type ENUMERATION!" }
+                        }
+                    }
                 }
             }
 
