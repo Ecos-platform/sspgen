@@ -1,7 +1,12 @@
 # sspgen
-A Kotlin DSL for generating [SSP](https://ssp-standard.org/) archives.
+> A Kotlin DSL for generating [SSP](https://ssp-standard.org/) archives.
 
-`sspgen` will perform some validation of the `SystemStructureDefinition`, 
+![](logo.png)
+
+
+`sspgen` is Kotlin DSL designed to ease the work of creating SSP compliant simulation systems. 
+
+Among other things, `sspgen` can validate the `SystemStructureDefinition`, 
 e.g. checking that connectors exists and that connections are made between the same variable type.
 
 Resources bundled with the generated `.ssp` may be specified both as local files and remote URLs.
