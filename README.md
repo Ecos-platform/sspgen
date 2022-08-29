@@ -16,7 +16,12 @@ Resources bundled with the generated `.ssp` may be specified both as local files
 
 Either download the latest [kotlin-compiler](https://github.com/JetBrains/kotlin/releases) and add the bin folder to PATH.
 
-_OR_, simply run the script in the context of [IntelliJ](https://www.jetbrains.com/idea/), which additionally adds script auto completion.
+_OR_, (recommended) run the script in the context of [IntelliJ](https://www.jetbrains.com/idea/), which additionally adds script auto completion.
+
+
+### Maven artifact
+
+sspgen is hosted through [Maven Central](https://search.maven.org/artifact/info.laht.sspgen/dsl)
 
 
 ### Example
